@@ -22,7 +22,7 @@ Client::~Client()
 */
 int Client::connectServer(std::string host, int port)
 {
-  std::cout << "creating session" << std::endl;
+  std::cout << "Creating session" << std::endl;
   Session *session = new Session(host, port);
 }
 
