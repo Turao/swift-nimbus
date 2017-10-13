@@ -10,11 +10,41 @@ INC_DIR=./include/
 BIN_DIR=./bin/
 SRC_DIR=./src/
 
-all: bin Utilities NimbusFile User Client Server
+all: bin Utilities NimbusFile User Client NimbusClient Server NimbusServer
 
 bin:
 	mkdir -p $(BIN_DIR)/
 
+clean:
+	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o #$(SRC_DIR)/*~ $(INC_DIR)/*~ *~
+
+
+
+# Application
+
+NimbusClient:
+	$(CC) -c $(SRC_DIR)/NimbusClient.cpp -I$(INC_DIR) -Wall
+	mv NimbusClient.o $(BIN_DIR)
+	$(CC) -o $(BIN_DIR)/NimbusClient \
+					 $(BIN_DIR)/NimbusClient.o \
+					 $(BIN_DIR)/Client.o \
+					 $(BIN_DIR)/User.o \
+					 $(BIN_DIR)/NimbusFile.o \
+					 $(BIN_DIR)/Utilities.o \
+					 -Wall
+
+
+NimbusServer:
+	$(CC) -c $(SRC_DIR)/NimbusServer.cpp -I$(INC_DIR) -Wall
+	mv NimbusServer.o $(BIN_DIR)
+	$(CC) -o $(BIN_DIR)/NimbusServer \
+					 $(BIN_DIR)/NimbusServer.o \
+					 $(BIN_DIR)/Server.o \
+					 $(BIN_DIR)/NimbusFile.o \
+					 $(BIN_DIR)/Utilities.o \
+					 -Wall
+
+# Classes
 
 Client:
 	$(CC) -c $(SRC_DIR)/Client.cpp -I$(INC_DIR) -Wall
@@ -31,19 +61,11 @@ Server:
 	mv Server.o $(BIN_DIR)
 
 
-Utilities:
-	$(CC) -c $(SRC_DIR)/Utilities.cpp -I$(INC_DIR) -Wall
-	mv Utilities.o $(BIN_DIR)
-
-
 NimbusFile:
 	$(CC) -c $(SRC_DIR)/NimbusFile.cpp -I$(INC_DIR) -Wall
 	mv NimbusFile.o $(BIN_DIR)
 
 
-# if we ever need to build as a lib
-# lib-[LIBNAME]:
-	# ar crs $(LIB_DIR)/lib[LIBNAME].a $(BIN_DIR)/[OBJECT].o
-
-clean:
-	rm -rf $(LIB_DIR)/*.a $(BIN_DIR)/*.o #$(SRC_DIR)/*~ $(INC_DIR)/*~ *~
+Utilities:
+	$(CC) -c $(SRC_DIR)/Utilities.cpp -I$(INC_DIR) -Wall
+	mv Utilities.o $(BIN_DIR)

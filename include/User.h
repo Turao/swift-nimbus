@@ -8,17 +8,15 @@
 class User
 {
 public:
-  User();
+  User(std::string name);
   ~User();
 
-  void setUsername(std::string name);
-  std::string getUsername();
-
+  std::string getName();
   bool isLoggedIn();
 
 protected:
 private:
-  std::string username;
+  std::string name;
   std::vector<int> devices;
   std::vector<NimbusFile> files;
   bool loggedIn;

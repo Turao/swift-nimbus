@@ -1,17 +1,20 @@
 #include "Client.h"
 
-#include <string.h>
+#include <iostream>
+#include <string>
 
 #include "User.h"
 
-Client::Client()
+Client::Client(std::string username)
 {
-
+  user = new User(username);
+  std::cout << "user created" << std::endl;
+  std::cout << user->getName() << std::endl;
 }
 
 Client::~Client()
 {
-
+  delete user;
 }
 
 /* Connects the client to the server

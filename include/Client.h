@@ -7,7 +7,7 @@
 class Client
 {
 public:
-  Client();
+  Client(std::string username);
   ~Client();
   
   /* Connects the client to the server
@@ -52,6 +52,6 @@ public:
 
 protected:
 private:
-  User user;
+  User *user;
 
 };
