@@ -11,7 +11,7 @@
 
 Socket::Socket(std::string host, int port)
 {
-  struct sockaddr_in peer, s_cli, s_serv;
+  struct sockaddr_in s_cli, s_serv;
 
   std::cout << "Initializing socket" << std::endl;
   if ((s = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
@@ -64,5 +64,5 @@ Socket::Socket(std::string host, int port)
 
 Socket::~Socket()
 {
-
+  shutdown(s, STOP_RECEPTION_TRANSMISSION);
 }
