@@ -20,6 +20,6 @@ protected:
 private:
   std::string username;
   std::vector<int> devices;
-  // std::vector<NimbusFile> files;
+  std::vector<NimbusFile> files;
   bool loggedIn;
 };
