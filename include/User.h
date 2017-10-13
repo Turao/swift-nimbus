@@ -12,6 +12,8 @@ public:
   ~User();
 
   std::string getName();
+  
+  void setLoggedIn(bool status);
   bool isLoggedIn();
 
 protected:

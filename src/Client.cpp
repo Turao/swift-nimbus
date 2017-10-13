@@ -4,17 +4,16 @@
 #include <string>
 
 #include "User.h"
+#include "Session.h"
 
-Client::Client(std::string username)
+Client::Client(std::string username) : user(username)
 {
-  user = new User(username);
   std::cout << "user created" << std::endl;
-  std::cout << user->getName() << std::endl;
+  std::cout << user.getName() << std::endl;
 }
 
 Client::~Client()
 {
-  delete user;
 }
 
 /* Connects the client to the server
@@ -23,7 +22,8 @@ Client::~Client()
 */
 int Client::connectServer(std::string host, int port)
 {
-
+  std::cout << "creating session" << std::endl;
+  Session *session = new Session(host, port);
 }
 
 /* Synchronizes 'sync_dir_<username>' directory

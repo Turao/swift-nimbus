@@ -13,9 +13,10 @@ int main(int argc, char* argv[])
   }
   else {
     string username = string(argv[1]);
-    string address = string(argv[2]);
+    string host = string(argv[2]);
     int port = atoi(argv[3]);
 
     Client *client = new Client(username);
+    client->connectServer(host, port);
   }
 }

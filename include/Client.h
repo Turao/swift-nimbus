@@ -52,6 +52,6 @@ public:
 
 protected:
 private:
-  User *user;
+  User user;
 
 };
