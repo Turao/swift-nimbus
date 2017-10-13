@@ -1,40 +1,67 @@
-#pragma once
+#include "Client.h"
+
+#include <string.h>
+
+#include "User.h"
+
+Client::Client()
+{
+
+}
+
+Client::~Client()
+{
+
+}
 
 /* Connects the client to the server
 *  host: server address
 *  port: server port
 */
-int connect_server(char *host, int port);
+int Client::connectServer(std::string host, int port)
+{
 
+}
 
 /* Synchronizes 'sync_dir_<username>' directory
 *  with the server
 */
-void sync_client();
+void Client::syncClient()
+{
 
+}
 
 /* Uploads a local file to the server
 *
 *  file: file path
 */
-void send_file(char *file);
+void Client::sendFile(std::string file)
+{
 
+}
 
 /* Downloads a file from the server
 *
 *  file: file path
 */
-void get_file(char *file);
+void Client::getFile(std::string file)
+{
 
+}
 
 /* Deletes a file from the local directory
 *  'sync_dir_<username>'
 *
 *  file: file path
 */
-void delete_file(char* file);
+void Client::deleteFile(std::string file)
+{
 
+}
 
 /* Closes the connection with the server
 */
-void close_connection();
+void Client::closeConnection()
+{
+
+}

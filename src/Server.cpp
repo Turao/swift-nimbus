@@ -1,21 +1,37 @@
-#pragma once
+#include "Server.h"
 
+Server::Server()
+{
+
+}
+
+Server::~Server()
+{
+  
+}
 
 /* Synchronizes with the client's
 * 'sync_dir_<username>' directory
 */
-void sync_server();
+void Server::syncServer()
+{
 
+}
 
 /* Receives a file sent by the client
 *
 *  file: file path
 */
-void receive_file(char *file);
+void Server::receiveFile(std::string file)
+{
 
+}
 
 /* Sends a file to the client
 *
 *  file: file path
 */
-void send_file(char *file);
+void Server::sendFile(std::string file)
+{
+
+}
