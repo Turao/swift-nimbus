@@ -13,3 +13,8 @@ Session::~Session()
 {
 
 }
+
+Socket Session::getSocket()
+{
+  return this->teste; //TO-DO: UPDATE
+}

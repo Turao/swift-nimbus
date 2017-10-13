@@ -10,6 +10,8 @@ public:
   Session(std::string host, int port);
   ~Session();
 
+  Socket getSocket();
+
 protected:
 private:
   Socket teste;

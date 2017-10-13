@@ -1,13 +1,15 @@
 #include "Server.h"
+#include "Session.h"
 
 Server::Server()
 {
-
+  Session *session = new Session("", 8080);
+  session->getSocket().listenSocket();
 }
 
 Server::~Server()
 {
-  
+
 }
 
 /* Synchronizes with the client's
