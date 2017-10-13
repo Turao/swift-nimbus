@@ -8,18 +8,10 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define SOCKET int
-#define INVALID_SOCKET  ((SOCKET)~0)
-
-#define STOP_RECEPTION 0
-#define STOP_TRANSMISSION 1
-#define STOP_RECEPTION_TRANSMISSION 2
 
 Socket::Socket(std::string host, int port)
 {
   struct sockaddr_in peer, s_cli, s_serv;
-  SOCKET s;
-
 
   std::cout << "Initializing socket" << std::endl;
   if ((s = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
