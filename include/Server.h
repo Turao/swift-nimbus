@@ -1,11 +1,13 @@
 #pragma once
 
 #include <string>
+#define DEFAULT_PORT 8080
 
 class Server
 {
 public:
   Server();
+  Server(int port);
   ~Server();
   
   /* Synchronizes with the client's
@@ -29,4 +31,5 @@ public:
 
 protected:
 private:
+  int port;
 };

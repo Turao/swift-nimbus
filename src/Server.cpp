@@ -1,10 +1,31 @@
 #include "Server.h"
+
+#include <iostream>
+
 #include "Session.h"
 
 Server::Server()
 {
-  Session *session = new Session("", 8080);
-  session->getSocket().listenSocket();
+  std::cout << "Creating session" << std::endl;
+  port = DEFAULT_PORT;
+  Session *session = new Session("", port);
+
+  Socket s = session->getSocket();
+  s.bindSocket();
+  s.listenSocket();
+  s.acceptSocket();
+}
+
+Server::Server(int port) : 
+port(port)
+{
+  std::cout << "Creating session" << std::endl;
+  Session *session = new Session("", port);
+  
+  Socket s = session->getSocket();
+  s.bindSocket();
+  s.listenSocket();
+  s.acceptSocket();
 }
 
 Server::~Server()

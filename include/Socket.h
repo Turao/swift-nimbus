@@ -17,11 +17,14 @@ public:
   Socket(int sockfd);
   ~Socket();
 
-  void listenSocket();
-  void acceptSocket();
+  bool bindSocket();
+  bool connectSocket();
+  bool listenSocket();
+  bool acceptSocket();
 
 protected:
 private:
   SOCKET s;
-  struct sockaddr_in s_local, s_remote; // local/remote sockets info
+  struct sockaddr_in s_local; // local socket info
+  struct sockaddr_in s_remote; // remote socket info
 };

@@ -3,5 +3,11 @@
 
 int main(int argc, char* argv[])
 {
-  Server *server = new Server();
+  if(argc < 2) {
+    Server *server = new Server();
+  }
+  else {
+    int port = atoi(argv[1]);
+    Server *server = new Server(port); 
+  }
 }
