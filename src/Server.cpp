@@ -1,43 +1,46 @@
 #include "Server.h"
 
 #include <iostream>
+#include <vector>
 
 #include "Session.h"
 
 
 Server::Server() :
 port(DEFAULT_PORT),
-master("", port)
+master("", port),
+sessionsManager(&master)
 {
   std::cout << "Creating session" << std::endl;
+  master.bindSocket(); //TO-DO: VERIFY IT COULD BIND
+  master.listenSocket(); //TO-DO: VERIFY IT COULD LISTEN
 
-  master.bindSocket();
-  master.listenSocket();
-  Socket *connection0 = master.acceptSocket();
-
-
-  Session *session = new Session(connection0);
+  while(1)
+  {
+    std::this_thread::sleep_for (std::chrono::seconds(1));
+  }
 }
 
 
 
 Server::Server(int port) :
 port(port),
-master("", port)
+master("", port),
+sessionsManager(&master)
 {
   std::cout << "Creating session" << std::endl;
+  master.bindSocket(); //TO-DO: VERIFY IT COULD BIND
+  master.listenSocket(); //TO-DO: VERIFY IT COULD LISTEN
 
-  master.bindSocket();
-  master.listenSocket();
-  Socket *connection0 = master.acceptSocket();
+  while(1)
+  {
+    std::this_thread::sleep_for (std::chrono::seconds(1));
+  }
 
-
-  Session *session = new Session(connection0);
 }
 
 Server::~Server()
 {
-
 }
 
 /* Synchronizes with the client's

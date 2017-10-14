@@ -51,6 +51,7 @@ Socket::Socket(int sockfd) : s(sockfd)
 
 Socket::~Socket()
 {
+  std::cout << "Closing socket" << std::endl;
   close(s);
 }
 
@@ -116,7 +117,7 @@ Socket* Socket::acceptSocket()
     std::cout << "Error while accepting connection: " 
               << strerror(errno)
               << std::endl;
-    return 0;
+    return nullptr;
   }
 
   std::cout << "Creating accepted socket" << std::endl;

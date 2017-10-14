@@ -1,8 +1,11 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "Socket.h"
+#include "Session.h"
+#include "SessionsManager.h"
 
 #define DEFAULT_PORT 8080
 
@@ -36,4 +39,5 @@ protected:
 private:
   int port;
   Socket master;
+  SessionsManager sessionsManager;
 };

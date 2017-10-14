@@ -15,6 +15,7 @@ public:
   ~Session();
 
   Socket* getSocket();
+  bool isAlive();
 
   void stopTailThread(); //just testing... TO-DO: remove
   void stopWriterThread(); //just testing... TO-DO: remove
@@ -35,4 +36,5 @@ private:
 
 
   Socket *socket;
+  bool alive;
 };
