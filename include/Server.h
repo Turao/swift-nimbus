@@ -1,6 +1,9 @@
 #pragma once
 
 #include <string>
+
+#include "Socket.h"
+
 #define DEFAULT_PORT 8080
 
 class Server
@@ -32,4 +35,5 @@ public:
 protected:
 private:
   int port;
+  Socket master;
 };

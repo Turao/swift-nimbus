@@ -4,28 +4,35 @@
 
 #include "Session.h"
 
-Server::Server()
+
+Server::Server() :
+port(DEFAULT_PORT),
+master("", port)
 {
   std::cout << "Creating session" << std::endl;
-  port = DEFAULT_PORT;
-  Session *session = new Session("", port);
 
-  Socket s = session->getSocket();
-  s.bindSocket();
-  s.listenSocket();
-  s.acceptSocket();
+  master.bindSocket();
+  master.listenSocket();
+  Socket *connection0 = master.acceptSocket();
+
+
+  Session *session = new Session(connection0);
 }
 
-Server::Server(int port) : 
-port(port)
+
+
+Server::Server(int port) :
+port(port),
+master("", port)
 {
   std::cout << "Creating session" << std::endl;
-  Session *session = new Session("", port);
-  
-  Socket s = session->getSocket();
-  s.bindSocket();
-  s.listenSocket();
-  s.acceptSocket();
+
+  master.bindSocket();
+  master.listenSocket();
+  Socket *connection0 = master.acceptSocket();
+
+
+  Session *session = new Session(connection0);
 }
 
 Server::~Server()

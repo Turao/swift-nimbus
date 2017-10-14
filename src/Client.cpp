@@ -6,7 +6,8 @@
 #include "User.h"
 #include "Session.h"
 
-Client::Client(std::string username) : user(username)
+Client::Client(std::string username) : 
+user(username)
 {
   std::cout << "user created" << std::endl;
   std::cout << user.getName() << std::endl;
@@ -24,8 +25,6 @@ int Client::connectServer(std::string host, int port)
 {
   std::cout << "Creating session" << std::endl;
   Session *session = new Session(host, port);
-
-  session->getSocket().connectSocket();
 }
 
 /* Synchronizes 'sync_dir_<username>' directory

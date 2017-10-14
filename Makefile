@@ -33,6 +33,7 @@ NimbusClient:
 					 $(BIN_DIR)/Socket.o \
 					 $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/Utilities.o \
+					 -lpthread \
 					 -Wall
 
 
@@ -46,6 +47,7 @@ NimbusServer:
 					 $(BIN_DIR)/Socket.o \
 					 $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/Utilities.o \
+					 -lpthread \
 					 -Wall
 
 # Classes

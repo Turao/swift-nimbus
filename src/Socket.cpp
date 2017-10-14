@@ -8,10 +8,11 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include <unistd.h> // close socket file descriptor
 #include <errno.h>
 #include <string.h>
 
-Socket::Socket(std::string host, int port)
+Socket::Socket(std::string host, unsigned int port)
 {
   std::cout << "Initializing socket" << std::endl;
   if ((s = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
@@ -50,7 +51,7 @@ Socket::Socket(int sockfd) : s(sockfd)
 
 Socket::~Socket()
 {
-  shutdown(s, STOP_RECEPTION_TRANSMISSION);
+  close(s);
 }
 
 
@@ -104,7 +105,8 @@ bool Socket::listenSocket()
   return true;
 }
 
-bool Socket::acceptSocket()
+
+Socket* Socket::acceptSocket()
 {
   std::cout << "Accepting connection" << std::endl;
   socklen_t s_local_len = sizeof(s_local);
@@ -114,12 +116,24 @@ bool Socket::acceptSocket()
     std::cout << "Error while accepting connection: " 
               << strerror(errno)
               << std::endl;
-    return false;
+    return 0;
   }
 
   std::cout << "Creating accepted socket" << std::endl;
   Socket *accepted_socket = new Socket(sockfd);
   std::cout << "Accepted socket created" << std::endl;
 
-  return true;
+  return accepted_socket;
+}
+
+
+int Socket::read(char* buffer, size_t length)
+{
+  return ::read(s, buffer, length);
+}
+
+
+void Socket::write(char* data, size_t length)
+{
+  ::write(s, data, length);
 }

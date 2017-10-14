@@ -13,14 +13,18 @@
 class Socket
 {
 public:
-  Socket(std::string host, int port);
+  Socket(std::string host, unsigned int port);
   Socket(int sockfd);
   ~Socket();
 
   bool bindSocket();
-  bool connectSocket();
   bool listenSocket();
-  bool acceptSocket();
+  Socket* acceptSocket();
+  
+  bool connectSocket();
+
+  int read(char* buffer, size_t length);
+  void write(char* data, size_t length);
 
 protected:
 private:
