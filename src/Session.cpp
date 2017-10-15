@@ -7,13 +7,15 @@
 #include <chrono>
 
 Session::Session(std::string host, int port) :
-alive(true)
+alive(true),
+tailThread(nullptr),
+writerThread(nullptr)
 {
   socket = new Socket(host, port);
-  socket->connectSocket();
+  socket->connect();
 
   // initializes read thread
-  this->writerThread = std::thread(&Session::writer, this);
+  this->writerThread = new std::thread(&Session::writer, this);
   while(1)
   {
     std::this_thread::sleep_for (std::chrono::seconds(1));
@@ -22,26 +24,27 @@ alive(true)
 
 Session::Session(Socket *s) :
 socket(s),
-alive(true)
+alive(true),
+tailThread(nullptr),
+writerThread(nullptr)
 {
   // initializes read thread
-  this->tailThread = std::thread(&Session::tail, this);
+  this->tailThread = new std::thread(&Session::tail, this);
 }
 
 
 Session::~Session()
 {
-  if(this->_tail_isRunning) {
-    std::cout << "Stopping session threads (tail)" << std::endl;
+  if(this->tailThread) {
     stopTailThread();
+    delete this->tailThread;
   }
 
-  if(this->_writer_isRunning) {
-    std::cout << "Stopping session threads (writer)" << std::endl;
+  if(this->writerThread) {
     stopWriterThread();
+    delete this->writerThread;
   }
 
-  std::cout << "Deleting socket" << std::endl;
   delete socket;
 }
 
@@ -74,11 +77,11 @@ void Session::tail() //just testing...
     }
     else {
       if(response == 0) {
-        _tail_isRunning = false;
         std::cout << "Socket "
                   << "(" << this->socket << "): "
                   << "connection closed (0 bytes read)"
                   << std::endl;
+        _tail_isRunning = false;
         this->alive = false;
       }
     }
@@ -89,7 +92,7 @@ void Session::tail() //just testing...
 void Session::stopTailThread() //just testing...
 {
   this->_tail_isRunning = false;
-  tailThread.join();
+  tailThread->join();
 }
 
 
@@ -109,5 +112,5 @@ void Session::writer() //just testing...
 void Session::stopWriterThread() //just testing...
 {
   this->_writer_isRunning = false;
-  writerThread.join();
+  writerThread->join();
 }

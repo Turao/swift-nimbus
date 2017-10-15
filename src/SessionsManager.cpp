@@ -1,7 +1,6 @@
 #include "SessionsManager.h"
 
 #include <iostream>
-#include <algorithm> // std::remove_if
 
 SessionsManager::SessionsManager(Socket *master) :
 master(master)
@@ -42,19 +41,20 @@ void SessionsManager::scrubber()
   this->_scrubber_isRunning = true;
   while(_scrubber_isRunning)
   {
-    std::cout << "Number of sessions: " << sessions.size() << std::endl;
-    for(auto it = sessions.begin(); it != sessions.end(); ++it)
+    for(auto it = sessions.begin(); it != sessions.end();)
     {
       if(!(*it)->isAlive()) {
-        // WARNING - THIS IS BREAKING THE CODE!
-        std::cout << "Deleting dead session" << std::endl;
-        // delete *it;
-        std::cout << "Dead session deleted. Removing from vector" << std::endl;
-        sessions.erase(it);
-        std::cout << "Dead session removed from vector" << std::endl;
+        std::cout << "Closing session. " 
+                  << "Socket (" << *it << ") disconnected"
+                  << std::endl;
+        delete *it;
+        it = sessions.erase(it);
+      }
+      else {
+        ++it;
       }
     }
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 }
 
@@ -73,7 +73,7 @@ void SessionsManager::connectionsHandler()
   this->_connectionsHandler_isRunning = true;
   while(_connectionsHandler_isRunning)
   {
-    Socket *response = master->acceptSocket();
+    Socket *response = master->accept();
     if(response != nullptr) {
       std::cout << "New connection on master socket" << std::endl;
       Session *session = new Session(response);

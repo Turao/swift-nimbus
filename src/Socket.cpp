@@ -51,68 +51,63 @@ Socket::Socket(int sockfd) : s(sockfd)
 
 Socket::~Socket()
 {
-  std::cout << "Closing socket" << std::endl;
+  std::cout << "Closing socket (" << this << ")" << std::endl;
   close(s);
+  std::cout << "Socket closed (" << this << ")" << std::endl;
 }
 
 
-bool Socket::bindSocket()
+void Socket::bind()
 {
   std::cout << "Binding socket data" << std::endl;
   // binds local information with socket
-  if ((bind(s, (struct sockaddr *)&s_local, sizeof(s_local))) != 0)
+  if ((::bind(s, (struct sockaddr *)&s_local, sizeof(s_local))) != 0)
   {
     std::cout << "Socket bind failure: " 
               << strerror(errno)
               << std::endl;
-    shutdown(s, STOP_RECEPTION_TRANSMISSION);
-    return false;
+    close(s);
+    exit(1);
   }
   std::cout << "Socket bind successful" << std::endl;
-
-  return true;
 }
 
 
-bool Socket::connectSocket()
+void Socket::connect()
 {
   // establishes connection between local socket and remote socket
   std::cout << "Establishing connection" << std::endl;
-  if(connect(s, (struct sockaddr*)&s_remote, sizeof(s_remote)) != 0)
+  if(::connect(s, (struct sockaddr*)&s_remote, sizeof(s_remote)) != 0)
   {
     std::cout << "Connection error: " 
               << strerror(errno)
               << std::endl;
-    shutdown(s, STOP_RECEPTION_TRANSMISSION);
-    return false;
+    close(s);
+    exit(1);
   }
   std::cout << "Connection established" << std::endl;
-
-  return true;
 }
 
 
-bool Socket::listenSocket()
+void Socket::listen()
 {
   std::cout << "Listening on socket for incoming connections" << std::endl;
-  if(listen(s, 8) < 0) {
+  if(::listen(s, 8) < 0) {
     // allows up to 8 connections at the same time
     std::cout << "Error while listening on socket: "
               << strerror(errno)
               << std::endl;
-    return false;
+    exit(1);
   }
-
-  return true;
 }
 
 
-Socket* Socket::acceptSocket()
+Socket* Socket::accept()
 {
   std::cout << "Accepting connection" << std::endl;
   socklen_t s_local_len = sizeof(s_local);
   int sockfd;
-  if((sockfd = accept(s, (struct sockaddr *) &s_local, 
+  if((sockfd = ::accept(s, (struct sockaddr *) &s_local, 
                      &s_local_len)) < 0) {
     std::cout << "Error while accepting connection: " 
               << strerror(errno)

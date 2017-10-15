@@ -26,15 +26,15 @@ private:
   // thread pattern below
   // https://stackoverflow.com/questions/37358597/start-a-daemon-thread-thats-a-private-method-of-the-class
   std::atomic<bool> _tail_isRunning;
-  std::thread tailThread;
+  std::thread *tailThread;
   void tail();
 
 
   std::atomic<bool> _writer_isRunning;
-  std::thread writerThread;
+  std::thread *writerThread;
   void writer();
 
 
   Socket *socket;
-  bool alive;
+  std::atomic<bool> alive;
 };

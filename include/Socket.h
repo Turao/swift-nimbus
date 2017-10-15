@@ -17,11 +17,11 @@ public:
   Socket(int sockfd);
   ~Socket();
 
-  bool bindSocket();
-  bool listenSocket();
-  Socket* acceptSocket();
+  void bind();
+  void listen();
+  Socket* accept();
   
-  bool connectSocket();
+  void connect();
 
   int read(char* buffer, size_t length);
   void write(char* data, size_t length);

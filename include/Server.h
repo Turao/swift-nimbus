@@ -15,6 +15,7 @@ public:
   Server();
   Server(int port);
   ~Server();
+
   
   /* Synchronizes with the client's
   * 'sync_dir_<username>' directory
@@ -40,4 +41,6 @@ private:
   int port;
   Socket master;
   SessionsManager sessionsManager;
+
+  void initMasterSocket();
 };

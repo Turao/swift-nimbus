@@ -12,8 +12,8 @@ master("", port),
 sessionsManager(&master)
 {
   std::cout << "Creating session" << std::endl;
-  master.bindSocket(); //TO-DO: VERIFY IT COULD BIND
-  master.listenSocket(); //TO-DO: VERIFY IT COULD LISTEN
+  master.bind();
+  master.listen();
 
   while(1)
   {
@@ -29,8 +29,8 @@ master("", port),
 sessionsManager(&master)
 {
   std::cout << "Creating session" << std::endl;
-  master.bindSocket(); //TO-DO: VERIFY IT COULD BIND
-  master.listenSocket(); //TO-DO: VERIFY IT COULD LISTEN
+  master.bind();
+  master.listen();
 
   while(1)
   {
