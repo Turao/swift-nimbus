@@ -24,7 +24,7 @@ Client::~Client()
 int Client::connectServer(std::string host, int port)
 {
   std::cout << "Creating session" << std::endl;
-  Session *session = new Session(host, port);
+  session = new Session(host, port);
 }
 
 /* Synchronizes 'sync_dir_<username>' directory
@@ -67,5 +67,6 @@ void Client::deleteFile(std::string file)
 */
 void Client::closeConnection()
 {
-
+  std::cout << "Closing session" << std::endl;
+  delete session;
 }

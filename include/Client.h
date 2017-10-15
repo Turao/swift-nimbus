@@ -3,6 +3,7 @@
 #include <string>
 
 #include "User.h"
+#include "Session.h"
 
 class Client
 {
@@ -53,5 +54,5 @@ public:
 protected:
 private:
   User user;
-
+  Session *session;
 };
