@@ -17,7 +17,10 @@ public:
   Socket* getSocket();
   bool isAlive();
 
+  void startTailThread(); //just testing... TO-DO: remove
   void stopTailThread(); //just testing... TO-DO: remove
+  
+  void startWriterThread(); //just testing... TO-DO: remove
   void stopWriterThread(); //just testing... TO-DO: remove
 
 

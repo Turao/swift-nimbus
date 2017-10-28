@@ -15,7 +15,7 @@ writerThread(nullptr)
   socket->connect();
 
   // initializes read thread
-  this->writerThread = new std::thread(&Session::writer, this);
+  startWriterThread();
   while(1)
   {
     std::this_thread::sleep_for (std::chrono::seconds(1));
@@ -29,7 +29,7 @@ tailThread(nullptr),
 writerThread(nullptr)
 {
   // initializes read thread
-  this->tailThread = new std::thread(&Session::tail, this);
+  startTailThread();
 }
 
 
@@ -89,11 +89,19 @@ void Session::tail() //just testing...
 }
 
 
+void Session::startTailThread() //just testing...
+{
+  if(tailThread == nullptr) { // prevents multiple tail threads and mem leak
+    this->tailThread = new std::thread(&Session::tail, this);
+  }
+}
+
 void Session::stopTailThread() //just testing...
 {
   this->_tail_isRunning = false;
   tailThread->join();
 }
+
 
 
 void Session::writer() //just testing...
@@ -107,6 +115,13 @@ void Session::writer() //just testing...
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
+}
+
+void Session::startWriterThread() //just testing...
+{
+  if(tailThread == nullptr) { // prevents multiple writer threads and mem leak
+    this->writerThread = new std::thread(&Session::writer, this);
+  }
 }
 
 void Session::stopWriterThread() //just testing...

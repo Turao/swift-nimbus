@@ -6,7 +6,7 @@ SessionsManager::SessionsManager(Socket *master) :
 master(master)
 {
   this->scrubberThread = std::thread(&SessionsManager::scrubber, this);
-  this->connectionsHandlerThread = std::thread(&SessionsManager::connectionsHandler, this);
+  startScrubber();
 }
 
 
@@ -26,6 +26,11 @@ SessionsManager::~SessionsManager()
   } 
 }
 
+
+void SessionsManager::startScrubber()
+{
+  this->connectionsHandlerThread = std::thread(&SessionsManager::connectionsHandler, this);
+}
 
 
 void SessionsManager::stopScrubber()

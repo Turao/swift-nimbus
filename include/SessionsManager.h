@@ -10,9 +10,12 @@ public:
   SessionsManager(Socket *master);
   ~SessionsManager();
 
+  void startScrubber();
   void stopScrubber();
   void stopConnectionsHandler();
+
 protected:
+  
 private:
   Socket *master;
   std::vector<Session*> sessions;

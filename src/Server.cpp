@@ -6,6 +6,8 @@
 #include "Session.h"
 
 
+#include "NimbusFile.h" //testing
+
 Server::Server() :
 port(DEFAULT_PORT),
 master("", port),
@@ -31,6 +33,11 @@ sessionsManager(&master)
   std::cout << "Creating session" << std::endl;
   master.bind();
   master.listen();
+
+
+
+  NimbusFile *file = new NimbusFile("/home/lenz/Desktop/test.txt");
+  delete file;
 
   while(1)
   {
