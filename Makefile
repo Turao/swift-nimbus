@@ -10,7 +10,7 @@ INC_DIR=./include/
 BIN_DIR=./bin/
 SRC_DIR=./src/
 
-all: bin Utilities DirectoryManager NimbusFile User Socket Session SessionsManager Client NimbusClient Server NimbusServer
+all: bin Utilities NimbusFile DirectoryManager User Socket Session SessionsManager Client NimbusClient Server NimbusServer
 
 bin:
 	mkdir -p $(BIN_DIR)/
