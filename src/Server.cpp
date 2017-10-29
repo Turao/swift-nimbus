@@ -35,9 +35,7 @@ sessionsManager(&master)
   master.listen();
 
 
-
-  NimbusFile *file = new NimbusFile("/home/lenz/Desktop/test.txt");
-  delete file;
+  this->file = new NimbusFile("/home/leonardo/Área de Trabalho/teste.txt");
 
   while(1)
   {
@@ -48,6 +46,7 @@ sessionsManager(&master)
 
 Server::~Server()
 {
+  delete this->file;
 }
 
 /* Synchronizes with the client's

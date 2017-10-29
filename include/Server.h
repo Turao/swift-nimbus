@@ -6,6 +6,7 @@
 #include "Socket.h"
 #include "Session.h"
 #include "SessionsManager.h"
+#include "NimbusFile.h"
 
 #define DEFAULT_PORT 8080
 
@@ -41,6 +42,7 @@ private:
   int port;
   Socket master;
   SessionsManager sessionsManager;
+  NimbusFile *file;
 
   void initMasterSocket();
 };

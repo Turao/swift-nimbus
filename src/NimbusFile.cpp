@@ -11,11 +11,10 @@
 NimbusFile::NimbusFile(std::string filepath) :
 filepath (filepath)
 {
+  struct stat file_stat;
+
   std::cout << "Initializing Nimbus file object" << std::endl;
 
-
-  //*********************************************************
-  struct stat file_stat;
   if(stat(filepath.c_str(), &file_stat) == -1) {
     std::cout << "Nimbus file initialization failure: " 
               << "[" << filepath << "]"
@@ -24,23 +23,9 @@ filepath (filepath)
     exit(1);
   }
 
-
-  std::cout << "File path: " << filepath << std::endl;
-  std::cout << "File name: " << "" << std::endl;
-  std::cout << "File extension: " << "" << std::endl;
-  std::cout << "File size: " << file_stat.st_size << " bytes" << std::endl;
-  
-
-   
-  std::cout << "Last modified at: " 
-            // converts to calendar time type with gmtime_s
-            << asctime(localtime(&file_stat.st_mtime))
-            << std::endl;
-  //*********************************************************
-
   std::size_t startOfFileName = filepath.find_last_of("/\\");
   std::size_t startOfFileExt =  filepath.find_last_of(".\\");
-  std::string fileName = filepath.substr(startOfFileName + 1, startOfFileExt - 1);
+  std::string fileName = filepath.substr(startOfFileName + 1, startOfFileExt - startOfFileName - 1);
   std::string fileExt = filepath.substr(startOfFileExt + 1);
   
   this->setFilePath(filepath);
@@ -48,6 +33,14 @@ filepath (filepath)
   this->setExtension(fileExt);
   this->setLastModified(asctime(localtime(&file_stat.st_mtime)));
   this->setSize((int) file_stat.st_size);
+
+  std::cout << "File path: " << this->getFilePath() << std::endl;
+  std::cout << "File name: " << this->getName() << std::endl;
+  std::cout << "File extension: " << this->getExtension() << std::endl;
+  std::cout << "File size: " << this->getSize() << " bytes" << std::endl;
+  std::cout << "Last Modified: " << this->getLastModified() << std::endl;
+
+  this->startObserver();
 }
 
 
@@ -90,7 +83,10 @@ void NimbusFile::observer()
 
     if(stat(this->getFilePath().c_str(), &file_stat) != -1) {
       if (difftime(file_stat.st_mtime, lastModified) > 0) {
-        // file has changed, do something
+        this->setLastModified(asctime(localtime(&file_stat.st_mtime)));
+        this->setSize((int) file_stat.st_size);
+        std::cout << "File " << this->getName() << "." << this->getExtension() << " has changed" << std::endl;
+        // notify directory manager
       }
     }
 
