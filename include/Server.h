@@ -42,7 +42,6 @@ private:
   int port;
   Socket master;
   SessionsManager sessionsManager;
-  NimbusFile *file;
 
   void initMasterSocket();
 };

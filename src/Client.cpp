@@ -6,15 +6,18 @@
 #include "User.h"
 #include "Session.h"
 
+#include "DirectoryManager.h"
+
 Client::Client(std::string username) : 
 user(username)
 {
-  std::cout << "user created" << std::endl;
-  std::cout << user.getName() << std::endl;
+  std::cout << "Initializing Directory Manager" << std::endl;
+  this->directoryManager = new DirectoryManager(user.getName());
 }
 
 Client::~Client()
 {
+  delete directoryManager;
 }
 
 /* Connects the client to the server

@@ -8,7 +8,7 @@
 class DirectoryManager
 {
 public:
-  DirectoryManager();
+  DirectoryManager(std::string username);
   ~DirectoryManager();
 
   void notify();
@@ -16,5 +16,6 @@ public:
 protected:
 
 private: 
-  std::vector<NimbusFile> directoryFiles;
+  std::string path;
+  std::vector<NimbusFile*> files;
 };

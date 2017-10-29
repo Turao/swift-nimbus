@@ -6,8 +6,6 @@
 #include "Session.h"
 
 
-#include "NimbusFile.h" //testing
-
 Server::Server() :
 port(DEFAULT_PORT),
 master("", port),
@@ -34,9 +32,6 @@ sessionsManager(&master)
   master.bind();
   master.listen();
 
-
-  this->file = new NimbusFile("/home/leonardo/Área de Trabalho/teste.txt");
-
   while(1)
   {
     std::this_thread::sleep_for (std::chrono::seconds(1));
@@ -46,7 +41,6 @@ sessionsManager(&master)
 
 Server::~Server()
 {
-  delete this->file;
 }
 
 /* Synchronizes with the client's

@@ -5,6 +5,8 @@
 #include "User.h"
 #include "Session.h"
 
+#include "DirectoryManager.h"
+
 class Client
 {
 public:
@@ -55,4 +57,6 @@ protected:
 private:
   User user;
   Session *session;
+
+  DirectoryManager *directoryManager;
 };
