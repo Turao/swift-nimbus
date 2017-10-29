@@ -10,7 +10,7 @@ INC_DIR=./include/
 BIN_DIR=./bin/
 SRC_DIR=./src/
 
-all: bin Utilities NimbusFile User Socket Session SessionsManager Client NimbusClient Server NimbusServer
+all: bin Utilities DirectoryManager NimbusFile User Socket Session SessionsManager Client NimbusClient Server NimbusServer
 
 bin:
 	mkdir -p $(BIN_DIR)/
@@ -33,6 +33,7 @@ NimbusClient:
 					 $(BIN_DIR)/SessionsManager.o \
 					 $(BIN_DIR)/Socket.o \
 					 $(BIN_DIR)/NimbusFile.o \
+					 $(BIN_DIR)/DirectoryManager.o \
 					 $(BIN_DIR)/Utilities.o \
 					 -lpthread \
 					 -Wall
@@ -48,6 +49,7 @@ NimbusServer:
 					 $(BIN_DIR)/SessionsManager.o \
 					 $(BIN_DIR)/Socket.o \
 					 $(BIN_DIR)/NimbusFile.o \
+					 $(BIN_DIR)/DirectoryManager.o \
 					 $(BIN_DIR)/Utilities.o \
 					 -lpthread \
 					 -Wall
@@ -86,6 +88,11 @@ Server:
 NimbusFile:
 	$(CC) -c $(SRC_DIR)/NimbusFile.cpp -I$(INC_DIR) -Wall
 	mv NimbusFile.o $(BIN_DIR)
+
+
+DirectoryManager:
+	$(CC) -c $(SRC_DIR)/DirectoryManager.cpp -I$(INC_DIR) -Wall
+	mv DirectoryManager.o $(BIN_DIR)
 
 
 Utilities:

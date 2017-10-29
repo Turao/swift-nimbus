@@ -17,6 +17,12 @@ public:
   std::string getLastModified();
   int getSize();
 
+  void setFilePath(std::string filepath);
+  void setName(std::string name);
+  void setExtension(std::string extension);
+  void setLastModified(std::string lastModified);
+  void setSize(int size);
+
   void startObserver();
   void stopObserver();
 

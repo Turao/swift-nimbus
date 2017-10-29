@@ -34,14 +34,20 @@ filepath (filepath)
    
   std::cout << "Last modified at: " 
             // converts to calendar time type with gmtime_s
-            << asctime(localtime(&file_stat.st_mtim.tv_sec))
+            << asctime(localtime(&file_stat.st_mtime))
             << std::endl;
   //*********************************************************
+
+  std::size_t startOfFileName = filepath.find_last_of("/\\");
+  std::size_t startOfFileExt =  filepath.find_last_of(".\\");
+  std::string fileName = filepath.substr(startOfFileName + 1, startOfFileExt - 1);
+  std::string fileExt = filepath.substr(startOfFileExt + 1);
   
-
-
-  // to-do: get file metadata
-  // and store into private variables
+  this->setFilePath(filepath);
+  this->setName(fileName);
+  this->setExtension(fileExt);
+  this->setLastModified(asctime(localtime(&file_stat.st_mtime)));
+  this->setSize((int) file_stat.st_size);
 }
 
 
@@ -70,14 +76,24 @@ void NimbusFile::stopObserver()
 
 void NimbusFile::observer()
 {
+  struct stat file_stat;
+  struct tm tm;
+  time_t lastModified;
+
   std::cout << "Initializing file observer thread" << std::endl;
   this->_observer_isRunning = true;
+
   while(_observer_isRunning)
   {
+    strptime(this->getLastModified().c_str(), "%a %b %d %T %Y", &tm);
+    lastModified = mktime(&tm);
 
-    // do something
-    // check wether file status was modified
-    
+    if(stat(this->getFilePath().c_str(), &file_stat) != -1) {
+      if (difftime(file_stat.st_mtime, lastModified) > 0) {
+        // file has changed, do something
+      }
+    }
+
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 }
@@ -90,9 +106,21 @@ std::string NimbusFile::getFilePath()
 }
 
 
+void NimbusFile::setFilePath(std::string filepath)
+{
+  this->filepath = filepath;
+}
+
+
 std::string NimbusFile::getName()
 {
   return this->name;
+}
+
+
+void NimbusFile::setName(std::string name)
+{
+  this->name = name;
 }
 
 
@@ -102,13 +130,31 @@ std::string NimbusFile::getExtension()
 }
 
 
+void NimbusFile::setExtension(std::string extension)
+{
+  this->extension = extension;
+}
+
+
 std::string NimbusFile::getLastModified()
 {
   return this->lastModified;
 }
 
 
+void NimbusFile::setLastModified(std::string lastModified)
+{
+  this->lastModified = lastModified;
+}
+
+
 int NimbusFile::getSize()
 {
   return this->size;
+}
+
+
+void NimbusFile::setSize(int size)
+{
+  this->size = size;
 }
