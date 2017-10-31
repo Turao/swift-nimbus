@@ -14,11 +14,6 @@ sessionsManager(&master)
   std::cout << "Creating session" << std::endl;
   master.bind();
   master.listen();
-
-  while(1)
-  {
-    std::this_thread::sleep_for (std::chrono::seconds(1));
-  }
 }
 
 
@@ -31,12 +26,6 @@ sessionsManager(&master)
   std::cout << "Creating session" << std::endl;
   master.bind();
   master.listen();
-
-  while(1)
-  {
-    std::this_thread::sleep_for (std::chrono::seconds(1));
-  }
-
 }
 
 Server::~Server()

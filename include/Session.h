@@ -6,6 +6,7 @@
 
 #include <thread>
 #include <atomic>
+#include <mutex>
 
 class Session
 {
@@ -17,27 +18,21 @@ public:
   Socket* getSocket();
   bool isAlive();
 
-  void startTailThread(); //just testing... TO-DO: remove
-  void stopTailThread(); //just testing... TO-DO: remove
-  
-  void startWriterThread(); //just testing... TO-DO: remove
-  void stopWriterThread(); //just testing... TO-DO: remove
+  void startListening();
+  void stopListening();
 
+  void* request(std::string field);
 
 protected:
 private:
   // thread pattern below
   // https://stackoverflow.com/questions/37358597/start-a-daemon-thread-thats-a-private-method-of-the-class
-  std::atomic<bool> _tail_isRunning;
-  std::thread *tailThread;
-  void tail();
-
-
-  std::atomic<bool> _writer_isRunning;
-  std::thread *writerThread;
-  void writer();
-
+  std::atomic<bool> _isListening;
+  std::thread *listenThread;
+  void listen();
 
   Socket *socket;
   std::atomic<bool> alive;
+
+  std::mutex socket_mtx;
 };

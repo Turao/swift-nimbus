@@ -2,47 +2,39 @@
 
 #include <iostream>
 #include <thread>
+#include <mutex>
+
 
 
 #include <chrono>
 
 Session::Session(std::string host, int port) :
 alive(true),
-tailThread(nullptr),
-writerThread(nullptr)
+listenThread(nullptr)
 {
   socket = new Socket(host, port);
   socket->connect();
 
   // initializes read thread
-  startWriterThread();
-  while(1)
-  {
-    std::this_thread::sleep_for (std::chrono::seconds(1));
-  }
+  startListening();
+  
 }
 
 Session::Session(Socket *s) :
 socket(s),
 alive(true),
-tailThread(nullptr),
-writerThread(nullptr)
+listenThread(nullptr)
 {
   // initializes read thread
-  startTailThread();
+  startListening();
 }
 
 
 Session::~Session()
 {
-  if(this->tailThread) {
-    stopTailThread();
-    delete this->tailThread;
-  }
-
-  if(this->writerThread) {
-    stopWriterThread();
-    delete this->writerThread;
+  if(this->listenThread) {
+    stopListening();
+    delete this->listenThread;
   }
 
   delete socket;
@@ -61,19 +53,23 @@ bool Session::isAlive()
 }
 
 
-void Session::tail() //just testing...
+void Session::listen()
 {
-  this->_tail_isRunning = true;
+  this->_isListening = true;
   char buffer[256];
   int response = 0;
-  while(_tail_isRunning)
+  while(_isListening)
   {
+    // locks the mutex
+    // so we can use the socket without any interference
+    socket_mtx.lock();
+
+
     if((response = socket->read(buffer, sizeof(buffer))) > 0) {
       std::cout << "Received from Socket "
                 << "(" << this->socket << "): "
                 << buffer
                 << std::endl;
-      std::this_thread::sleep_for(std::chrono::seconds(1));
     }
     else {
       if(response == 0) {
@@ -81,51 +77,60 @@ void Session::tail() //just testing...
                   << "(" << this->socket << "): "
                   << "connection closed (0 bytes read)"
                   << std::endl;
-        _tail_isRunning = false;
+        _isListening = false;
         this->alive = false;
       }
     }
-  }
-}
+    socket_mtx.unlock();
 
-
-void Session::startTailThread() //just testing...
-{
-  if(tailThread == nullptr) { // prevents multiple tail threads and mem leak
-    this->tailThread = new std::thread(&Session::tail, this);
-  }
-}
-
-void Session::stopTailThread() //just testing...
-{
-  this->_tail_isRunning = false;
-  tailThread->join();
-}
-
-
-
-void Session::writer() //just testing...
-{
-  this->_writer_isRunning = true;
-  char buffer[256];
-  while(_writer_isRunning)
-  {
-    std::cin >> buffer;
-    socket->write(buffer, sizeof(buffer));
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
-
 }
 
-void Session::startWriterThread() //just testing...
+
+void Session::startListening()
 {
-  if(tailThread == nullptr) { // prevents multiple writer threads and mem leak
-    this->writerThread = new std::thread(&Session::writer, this);
+  if(listenThread == nullptr) { // prevents multiple listen threads and mem leak
+    this->listenThread = new std::thread(&Session::listen, this);
   }
 }
 
-void Session::stopWriterThread() //just testing...
+void Session::stopListening()
 {
-  this->_writer_isRunning = false;
-  writerThread->join();
+  this->_isListening = false;
+  listenThread->join();
+}
+
+
+void* Session::request(std::string field)
+{
+  std::cout << "Requesting: " << field << std::endl;
+  
+  // to-do: prepare request packet
+  // to-do: serializes packet
+
+  std::string req = "request: " + field;
+
+  // locks the mutex
+  // so we can use the socket without any interference
+  socket_mtx.lock();
+
+  this->socket->write(const_cast<char*>(req.c_str()),
+                      req.size());
+
+  std::cout << "Request sent!" << std::endl;
+  std::cout << "Waiting for reply..." << std::endl;
+  
+  char buffer[256];
+  int response = 0;
+  if((response = socket->read(buffer, sizeof(buffer))) > 0) {
+      std::cout << "Received from Socket "
+                << "(" << this->socket << "): "
+                << buffer
+                << std::endl;
+    }
+
+  socket_mtx.unlock();
+  
+  return nullptr; //to-do: return response
 }

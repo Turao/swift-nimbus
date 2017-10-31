@@ -18,5 +18,10 @@ int main(int argc, char* argv[])
 
     Client *client = new Client(username);
     client->connectServer(host, port);
+
+  while(1)
+  {
+    std::this_thread::sleep_for (std::chrono::seconds(1));
+  }
   }
 }
