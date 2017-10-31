@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Session.h"
+#include "ServerSession.h"
 
 class SessionsManager
 {
@@ -18,7 +18,7 @@ protected:
   
 private:
   Socket *master;
-  std::vector<Session*> sessions;
+  std::vector<ServerSession*> sessions;
 
   std::atomic<bool> _scrubber_isRunning;
   std::thread scrubberThread;

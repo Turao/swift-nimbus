@@ -9,8 +9,7 @@
 #include <chrono>
 
 Session::Session(std::string host, int port) :
-alive(true),
-listenThread(nullptr)
+alive(true)
 {
   socket = new Socket(host, port);
   socket->connect();
@@ -22,8 +21,7 @@ listenThread(nullptr)
 
 Session::Session(Socket *s) :
 socket(s),
-alive(true),
-listenThread(nullptr)
+alive(true)
 {
   // initializes read thread
   startListening();

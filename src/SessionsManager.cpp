@@ -81,7 +81,7 @@ void SessionsManager::connectionsHandler()
     Socket *response = master->accept();
     if(response != nullptr) {
       std::cout << "New connection on master socket" << std::endl;
-      Session *session = new Session(response);
+      ServerSession *session = new ServerSession(response);
       this->sessions.push_back(session);
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));

@@ -27,8 +27,11 @@ Client::~Client()
 int Client::connectServer(std::string host, int port)
 {
   std::cout << "Creating session" << std::endl;
-  session = new Session(host, port);
+  session = new ClientSession(host, port);
   session->request("username");
+
+
+  return 0; // to-do: return something
 }
 
 /* Synchronizes 'sync_dir_<username>' directory

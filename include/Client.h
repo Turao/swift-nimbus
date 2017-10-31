@@ -3,7 +3,7 @@
 #include <string>
 
 #include "User.h"
-#include "Session.h"
+#include "ClientSession.h"
 
 #include "DirectoryManager.h"
 
@@ -56,7 +56,7 @@ public:
 protected:
 private:
   User user;
-  Session *session;
+  ClientSession *session;
 
   DirectoryManager *directoryManager;
 };

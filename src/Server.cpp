@@ -3,9 +3,6 @@
 #include <iostream>
 #include <vector>
 
-#include "Session.h"
-
-
 Server::Server() :
 port(DEFAULT_PORT),
 master("", port),

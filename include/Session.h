@@ -28,7 +28,7 @@ private:
   // thread pattern below
   // https://stackoverflow.com/questions/37358597/start-a-daemon-thread-thats-a-private-method-of-the-class
   std::atomic<bool> _isListening;
-  std::thread *listenThread;
+  std::thread *listenThread = nullptr;
   void listen();
 
   Socket *socket;

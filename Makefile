@@ -10,7 +10,7 @@ INC_DIR=./include/
 BIN_DIR=./bin/
 SRC_DIR=./src/
 
-all: bin Utilities NimbusFile DirectoryManager User Socket Session SessionsManager Client NimbusClient Server NimbusServer
+all: bin Utilities NimbusFile DirectoryManager User Socket Session ServerSession SessionsManager ClientSession Client NimbusClient Server NimbusServer
 
 bin:
 	mkdir -p $(BIN_DIR)/
@@ -29,11 +29,11 @@ NimbusClient:
 					 $(BIN_DIR)/NimbusClient.o \
 					 $(BIN_DIR)/Client.o \
 					 $(BIN_DIR)/User.o \
-					 $(BIN_DIR)/Session.o \
-					 $(BIN_DIR)/SessionsManager.o \
+					 $(BIN_DIR)/ClientSession.o \
+           $(BIN_DIR)/Session.o \
 					 $(BIN_DIR)/Socket.o \
-					 $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/DirectoryManager.o \
+           $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/Utilities.o \
 					 -lpthread \
 					 -Wall
@@ -45,11 +45,12 @@ NimbusServer:
 	$(CC) -o $(BIN_DIR)/NimbusServer \
 					 $(BIN_DIR)/NimbusServer.o \
 					 $(BIN_DIR)/Server.o \
-					 $(BIN_DIR)/Session.o \
 					 $(BIN_DIR)/SessionsManager.o \
+           $(BIN_DIR)/ServerSession.o \
+           $(BIN_DIR)/Session.o \
 					 $(BIN_DIR)/Socket.o \
-					 $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/DirectoryManager.o \
+           $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/Utilities.o \
 					 -lpthread \
 					 -Wall
@@ -69,6 +70,14 @@ User:
 Session:
 	$(CC) -c $(SRC_DIR)/Session.cpp -I$(INC_DIR) -Wall
 	mv Session.o $(BIN_DIR)
+
+ClientSession:
+	$(CC) -c $(SRC_DIR)/ClientSession.cpp -I$(INC_DIR) -Wall
+	mv ClientSession.o $(BIN_DIR)
+
+ServerSession:
+	$(CC) -c $(SRC_DIR)/ServerSession.cpp -I$(INC_DIR) -Wall
+	mv ServerSession.o $(BIN_DIR)
 
 SessionsManager:
 	$(CC) -c $(SRC_DIR)/SessionsManager.cpp -I$(INC_DIR) -Wall
