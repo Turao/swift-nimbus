@@ -15,5 +15,6 @@ public:
 
 protected:
 private:
+  void* onMessage(std::string message) override;
   
 };

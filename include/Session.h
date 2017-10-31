@@ -24,6 +24,7 @@ public:
   void* request(std::string field);
 
 protected:
+
 private:
   // thread pattern below
   // https://stackoverflow.com/questions/37358597/start-a-daemon-thread-thats-a-private-method-of-the-class
@@ -35,4 +36,5 @@ private:
   std::atomic<bool> alive;
 
   std::mutex socket_mtx;
+  virtual  void* onMessage(std::string message) = 0;
 };

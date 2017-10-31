@@ -68,6 +68,7 @@ void Session::listen()
                 << "(" << this->socket << "): "
                 << buffer
                 << std::endl;
+      this->onMessage(buffer);
     }
     else {
       if(response == 0) {
