@@ -3,10 +3,11 @@
 #include <iostream>
 #include <thread>
 #include <mutex>
-
-
-
 #include <chrono>
+
+#include <cstring>
+
+#include "Utilities.h"
 
 Session::Session(std::string host, int port) :
 alive(true)
@@ -54,7 +55,7 @@ bool Session::isAlive()
 void Session::listen()
 {
   this->_isListening = true;
-  char buffer[256];
+  Utilities::Message message;
   int response = 0;
   while(_isListening)
   {
@@ -63,12 +64,12 @@ void Session::listen()
     socket_mtx.lock();
 
 
-    if((response = socket->read(buffer, sizeof(buffer))) > 0) {
-      std::cout << "Received from Socket "
+    if((response = socket->read(reinterpret_cast<char*>(&message), 
+                                sizeof(message))) > 0) {
+      std::cout << "Received message from Socket "
                 << "(" << this->socket << "): "
-                << buffer
                 << std::endl;
-      this->onMessage(buffer);
+      this->onMessage(message);
     }
     else {
       if(response == 0) {
@@ -101,31 +102,34 @@ void Session::stopListening()
 }
 
 
-void* Session::request(std::string field)
+void* Session::request(Utilities::Field field)
 {
-  std::cout << "Requesting: " << field << std::endl;
+  std::cout << "Requesting " << field << std::endl;
   
-  // to-do: prepare request packet
-  // to-do: serializes packet
+  // prepare request
+  Utilities::Message request {Utilities::REQUEST, field};
 
-  std::string req = "request: " + field;
+  // serializes structure
+  // (we do a reinterpret cast when sending
+  // to tell the compiler to interpret the message
+  // as a byte array)
 
   // locks the mutex
   // so we can use the socket without any interference
   socket_mtx.lock();
 
-  this->socket->write(const_cast<char*>(req.c_str()),
-                      req.size());
+  this->socket->write(reinterpret_cast<char*>(&request),
+                      sizeof(request));
 
   std::cout << "Request sent!" << std::endl;
   std::cout << "Waiting for reply..." << std::endl;
   
-  char buffer[256];
-  int response = 0;
-  if((response = socket->read(buffer, sizeof(buffer))) > 0) {
-      std::cout << "Received from Socket "
+  Utilities::Message response;
+  int status = 0;
+  if((status = socket->read(reinterpret_cast<char*>(&response), 
+                              sizeof(response))) > 0) {
+      std::cout << "Received response from Socket "
                 << "(" << this->socket << "): "
-                << buffer
                 << std::endl;
     }
 

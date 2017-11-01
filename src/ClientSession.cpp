@@ -3,6 +3,8 @@
 #include <iostream>
 #include <string>
 
+#include "Utilities.h"
+
 ClientSession::ClientSession(std::string host, int port) :
 Session(host, port)
 {
@@ -14,9 +16,12 @@ ClientSession::~ClientSession()
 { 
 }
 
-void* ClientSession::onMessage(std::string message)
+void* ClientSession::onMessage(Utilities::Message message)
 {
   std::cout << "Handling message on Client side" << std::endl;
-  std::cout << "Message received: " << message << std::endl;
+  std::cout << "Message type: " << message.type << std::endl;
+  std::cout << "Message field: " << message.field << std::endl;
+
+
   return nullptr;
 }

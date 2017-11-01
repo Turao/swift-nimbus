@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Socket.h"
+#include "Utilities.h"
 
 
 class ServerSession : public Session
@@ -15,6 +16,6 @@ public:
 
 protected:
 private:
-  void* onMessage(std::string message) override;
+  void* onMessage(Utilities::Message message) override;
   
 };

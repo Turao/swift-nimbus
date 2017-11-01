@@ -5,8 +5,10 @@
 
 #include "User.h"
 #include "Session.h"
-
 #include "DirectoryManager.h"
+
+#include "Utilities.h"
+
 
 Client::Client(std::string username) : 
 user(username)
@@ -28,7 +30,7 @@ int Client::connectServer(std::string host, int port)
 {
   std::cout << "Creating session" << std::endl;
   session = new ClientSession(host, port);
-  session->request("username");
+  session->request(Utilities::USERNAME);
 
 
   return 0; // to-do: return something

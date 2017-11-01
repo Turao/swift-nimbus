@@ -8,6 +8,8 @@
 #include <atomic>
 #include <mutex>
 
+#include "Utilities.h"
+
 class Session
 {
 public:
@@ -21,7 +23,7 @@ public:
   void startListening();
   void stopListening();
 
-  void* request(std::string field);
+  void* request(Utilities::Field field);
 
 protected:
 
@@ -36,5 +38,5 @@ private:
   std::atomic<bool> alive;
 
   std::mutex socket_mtx;
-  virtual  void* onMessage(std::string message) = 0;
+  virtual  void* onMessage(Utilities::Message message) = 0;
 };
