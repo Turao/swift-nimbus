@@ -9,6 +9,7 @@
 #include <arpa/inet.h>
 
 #include <unistd.h> // close socket file descriptor
+#include <fcntl.h> // set socket descriptor as non-blocking
 #include <errno.h>
 #include <string.h>
 
