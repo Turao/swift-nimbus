@@ -29,8 +29,7 @@ Client::~Client()
 int Client::connectServer(std::string host, int port)
 {
   std::cout << "Creating session" << std::endl;
-  session = new ClientSession(host, port);
-  session->request(Utilities::USERNAME);
+  session = new ClientSession(host, port, this->user.getName());
 
 
   return 0; // to-do: return something

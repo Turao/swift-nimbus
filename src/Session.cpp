@@ -6,6 +6,7 @@
 #include <chrono>
 
 #include <cstring>
+#include <fstream>
 
 #include "Utilities.h"
 
@@ -105,9 +106,10 @@ void Session::stopListening()
 void* Session::request(Utilities::Field field)
 {
   std::cout << "Requesting " << field << std::endl;
+  char *content = new char[256]();
   
   // prepare request
-  Utilities::Message request {Utilities::REQUEST, field};
+  Utilities::Message request {Utilities::REQUEST, field, *content};
 
   // serializes structure
   // (we do a reinterpret cast when sending
@@ -120,6 +122,8 @@ void* Session::request(Utilities::Field field)
 
   this->socket->write(reinterpret_cast<char*>(&request),
                       sizeof(request));
+
+  delete[] content;
 
   std::cout << "Request sent!" << std::endl;
   std::cout << "Waiting for reply..." << std::endl;
@@ -136,4 +140,34 @@ void* Session::request(Utilities::Field field)
   socket_mtx.unlock();
   
   return nullptr; //to-do: return response
+}
+
+void Session::sendFile(char *fileName) 
+{
+  Utilities::Message replyMessage {Utilities::REPLY, Utilities::BEGIN_OF_FILE, *fileName};
+  char *fileContent = new char[FILE_BLOCK_SIZE]();
+  int offset = 0;
+
+  //this->reply(replyMessage);
+
+
+  std::ifstream infile;
+  infile.open(fileName, std::ios::binary | std::ios::in);
+
+  while (infile.eof()) {
+    infile.read(fileContent + offset, 1);
+    offset++;
+    if (offset == FILE_BLOCK_SIZE)
+    {
+      offset = 0;
+      replyMessage = {Utilities::REPLY, Utilities::CONTENT_OF_FILE, *fileContent};
+      //this->reply(replyMessage);
+    }
+  }
+
+
+  replyMessage = {Utilities::REPLY, Utilities::END_OF_FILE, *fileName};
+  //this->reply(replyMessage);
+
+  delete[] fileContent;
 }

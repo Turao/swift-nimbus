@@ -24,6 +24,7 @@ public:
   void stopListening();
 
   void* request(Utilities::Field field);
+  void sendFile(char *fileName);
 
 protected:
 
