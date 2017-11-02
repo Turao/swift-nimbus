@@ -14,7 +14,7 @@ Client::Client(std::string username) :
 user(username)
 {
   std::cout << "Initializing Directory Manager" << std::endl;
-  this->directoryManager = new DirectoryManager(user.getName());
+  //this->directoryManager = new DirectoryManager(user.getName());
 }
 
 Client::~Client()

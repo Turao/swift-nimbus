@@ -23,7 +23,8 @@ public:
   void startListening();
   void stopListening();
 
-  void* request(Utilities::Field field);
+  void* request(Utilities::Message request);
+  void reply(Utilities::Message message);
   void sendFile(char *fileName);
 
 protected:
@@ -40,4 +41,6 @@ private:
 
   std::mutex socket_mtx;
   virtual  void* onMessage(Utilities::Message message) = 0;
+  virtual  void handleReply(Utilities::Message message) = 0;
+  virtual  void handleRequest(Utilities::Message message) = 0;
 };

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 
 #include "Utilities.h"
 
@@ -41,15 +42,17 @@ void ClientSession::handleRequest(Utilities::Message message)
 	char *replyContent = new char[FILE_BLOCK_SIZE];
 	Utilities::Message replyMessage;
 
+  std::cout << "Handling request" << std::endl;
+
 	switch (message.field) {
 		case Utilities::USERNAME:
-			std::copy(this->username.begin(), this->username.end(), replyContent);
-			replyContent[this->username.size()] = '\0';
-			replyMessage = {Utilities::REPLY, Utilities::USERNAME, *replyContent};
-			//this->reply(replyMessage);
+			replyMessage = {Utilities::REPLY, Utilities::USERNAME};
+      strcpy(replyMessage.content, this->username.c_str());
+			this->reply(replyMessage);
 			break;
 		case Utilities::FILE:		// message.content should have the file name
 			this->sendFile(message.content);
+      break;
 
 	}
 

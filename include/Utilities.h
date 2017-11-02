@@ -22,6 +22,7 @@ namespace Utilities
   typedef struct Message {
     Type type;
     Field field;
+    int contentSize;
     char content[FILE_BLOCK_SIZE];
   } Message;
   
