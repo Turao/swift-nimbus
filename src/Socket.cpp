@@ -115,6 +115,10 @@ Socket* Socket::accept()
     return nullptr;
   }
 
+  // set socket descriptor to non-blocking mode
+  int flags = fcntl(sockfd, F_GETFL, 0);
+  fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+
   std::cout << "Creating accepted socket" << std::endl;
   Socket *accepted_socket = new Socket(sockfd);
   std::cout << "Accepted socket created" << std::endl;
