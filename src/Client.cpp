@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <thread>
 
 #include "User.h"
 #include "Session.h"
@@ -15,10 +16,13 @@ user(username)
 {
   std::cout << "Initializing Directory Manager" << std::endl;
   //this->directoryManager = new DirectoryManager(user.getName());
+
+  this->_commandThread = std::thread(&Client::commandThread, this);
 }
 
 Client::~Client()
 {
+  this->_commandThread.join();
   delete directoryManager;
 }
 
@@ -49,7 +53,8 @@ void Client::syncClient()
 */
 void Client::sendFile(std::string file)
 {
-
+  std::cout << "Uploading file: " << file << std::endl;
+  this->session->sendFile(file.c_str());
 }
 
 /* Downloads a file from the server
@@ -58,7 +63,7 @@ void Client::sendFile(std::string file)
 */
 void Client::getFile(std::string file)
 {
-
+  std::cout << "Downloading file: " << file << std::endl;
 }
 
 /* Deletes a file from the local directory
@@ -68,7 +73,7 @@ void Client::getFile(std::string file)
 */
 void Client::deleteFile(std::string file)
 {
-
+  std::cout << "Deleting file: " << file << std::endl;
 }
 
 /* Closes the connection with the server
@@ -77,4 +82,25 @@ void Client::closeConnection()
 {
   std::cout << "Closing session" << std::endl;
   delete session;
+}
+
+void Client::commandThread()
+{
+  _commandThread_isRunning = true;
+  std::string command, argument;
+  while(_commandThread_isRunning)
+  {
+    std::cin >> command >> argument;
+    
+    if(command.compare("sendFile") == 0)
+      sendFile(argument);
+    else if(command.compare("getFile") == 0)
+      getFile(argument);
+    else if(command.compare("deleteFile") == 0)
+      deleteFile(argument);
+    else
+      std::cout << "Unknown command" << std::endl;
+
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
 }

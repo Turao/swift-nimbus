@@ -25,7 +25,7 @@ public:
 
   void* request(Utilities::Message request);
   void reply(Utilities::Message message);
-  void sendFile(char *fileName);
+  void sendFile(const char *fileName);
 
 protected:
 

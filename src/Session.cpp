@@ -146,8 +146,9 @@ void Session::reply(Utilities::Message replyMessage)
   socket_mtx.unlock();
 }
 
-void Session::sendFile(char *fileName) 
+void Session::sendFile(const char *fileName) 
 {
+  std::cout << "Sending file: " << fileName << std::endl;
   Utilities::Message replyMessage {Utilities::REPLY, Utilities::BEGIN_OF_FILE, strlen(fileName)};
   char *fileContent = new char[FILE_BLOCK_SIZE]();
   int offset = 0;

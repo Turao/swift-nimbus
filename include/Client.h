@@ -1,9 +1,12 @@
 #pragma once
 
 #include <string>
+#include <atomic>
+#include <thread>
 
 #include "User.h"
 #include "ClientSession.h"
+
 
 #include "DirectoryManager.h"
 
@@ -59,4 +62,8 @@ private:
   ClientSession *session;
 
   DirectoryManager *directoryManager;
+
+  std::atomic<bool> _commandThread_isRunning{false};
+  std::thread _commandThread;
+  void commandThread();
 };
