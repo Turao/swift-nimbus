@@ -25,7 +25,6 @@ Socket::Socket(std::string host, unsigned int port)
   }
   std::cout << "Socket succesfully initialized" << std::endl;
 
-
   // assigns local socket IP/PORT
   std::cout << "Assigning local host address" << std::endl;
   bzero(&s_local, sizeof(s_local));
@@ -87,6 +86,11 @@ void Socket::connect()
     exit(1);
   }
   std::cout << "Connection established" << std::endl;
+
+  std::cout << "Changing socket to nonblocking mode" << std::endl;
+  // set socket descriptor to non-blocking mode
+  int flags = fcntl(s, F_GETFL, 0);
+  fcntl(s, F_SETFL, flags | O_NONBLOCK);
 }
 
 
