@@ -67,4 +67,22 @@ void ClientSession::handleRequest(Utilities::Message message)
 
 void ClientSession::handleReply(Utilities::Message message)
 {
+  switch (message.field)
+  {    
+    case Utilities::BEGIN_OF_FILE:
+      std::cout << "Recieving: " << std::string(message.content) << std::endl;
+      break;
+    
+    case Utilities::CONTENT_OF_FILE:
+      std::cout << "Content: " << std::string(message.content) << std::endl;
+      break;
+
+    case Utilities::END_OF_FILE:
+      std::cout << "Finishing: " << std::string(message.content) << std::endl;
+      break;
+
+    default:
+      std::cout << "Message with unknown field" << std::endl;
+      break;
+  }
 }

@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <string>
+#include <cstring>
 #include <thread>
 
 #include "User.h"
@@ -66,6 +67,10 @@ void Client::sendFile(std::string file)
 void Client::getFile(std::string file)
 {
   std::cout << "Downloading file: " << file << std::endl;
+  Utilities::Message request = { Utilities::REQUEST,
+                                 Utilities::FILE };
+  strncpy(request.content, file.c_str(), FILE_BLOCK_SIZE);
+  this->session->request(request);
 }
 
 /* Deletes a file from the local directory

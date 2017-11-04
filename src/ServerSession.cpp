@@ -35,7 +35,6 @@ directoryManager(nullptr)
     requestMessage = {Utilities::REQUEST, Utilities::FILE};
     strcpy(requestMessage.content, filepath.c_str());
     this->request(requestMessage);
-    std::this_thread::sleep_for(std::chrono::seconds(5));
   }
 }
 
@@ -69,6 +68,23 @@ void* ServerSession::onMessage(Utilities::Message message)
 
 void ServerSession::handleRequest(Utilities::Message message)
 {
+  std::cout << "Handling request" << std::endl;
+
+  char replyContent[FILE_BLOCK_SIZE];
+  Utilities::Message replyMessage;
+
+  switch (message.field)
+  {
+    case Utilities::FILE:
+      // message.content should have the file name
+      std::cout << "Client requested file: " << message.content << std::endl;
+      this->sendFile(message.content);
+      break;
+
+    default:
+      std::cout << "Unknown field requested" << std::endl;
+      break;
+  }
 }
 
 
