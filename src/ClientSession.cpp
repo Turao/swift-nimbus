@@ -53,7 +53,9 @@ void ClientSession::handleRequest(Utilities::Message message)
       this->reply(replyMessage);
       break;
 
-    case Utilities::FILE: // message.content should have the file name
+    case Utilities::FILE:
+      // message.content should have the file name
+      std::cout << "Server requested file: " << message.content << std::endl;
       this->sendFile(message.content);
       break;
 

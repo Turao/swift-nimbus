@@ -40,6 +40,16 @@ Socket::Socket(std::string host, unsigned int port)
     s_remote.sin_addr.s_addr = inet_addr(host.c_str());
     s_remote.sin_port = htons(port);
   }
+
+// setting 15 second timeout
+struct timeval tv;
+tv.tv_sec = 15;
+tv.tv_usec = 0;  // Not init'ing this can cause strange errors
+setsockopt(s, 
+           SOL_SOCKET, 
+           SO_RCVTIMEO, 
+           reinterpret_cast<char*>(&tv),
+           sizeof(struct timeval));
 }
 
 
@@ -114,9 +124,14 @@ Socket* Socket::accept()
   int sockfd;
   if((sockfd = ::accept(s, (struct sockaddr *) &s_local, 
                      &s_local_len)) < 0) {
-    std::cout << "Error while accepting connection: " 
-              << strerror(errno)
-              << std::endl;
+    if(errno != EAGAIN && errno != EWOULDBLOCK ) {
+      // EAGAIN and EWOULDBLOCK errors:
+      // The socket is marked nonblocking and
+      // no connections are present to be accepted.
+      std::cout << "Error while accepting connection: " 
+                << strerror(errno)
+                << std::endl;
+    }
     return nullptr;
   }
 

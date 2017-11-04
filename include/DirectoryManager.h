@@ -12,6 +12,7 @@ public:
   ~DirectoryManager();
 
   void notify();
+  std::vector<NimbusFile*> getFiles();
 
 protected:
 

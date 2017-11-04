@@ -55,11 +55,13 @@ bool Session::isAlive()
 
 void Session::listen()
 {
+  std::cout << "Listening..." << std::endl;
   this->_isListening = true;
   Utilities::Message message;
   int response = 0;
   while(_isListening)
   {
+    // std::cout << "Back on Listening..." << std::endl;
     // locks the mutex
     // so we can use the socket without any interference
     socket_mtx.lock();
@@ -139,10 +141,10 @@ void* Session::request(Utilities::Message request)
 void Session::reply(Utilities::Message replyMessage) 
 {
   socket_mtx.lock();
-  std::cout << "Sending reply" << std::endl;
+  // std::cout << "Sending reply" << std::endl;
   this->socket->write(reinterpret_cast<char*>(&replyMessage),
                       sizeof(replyMessage));
-  std::cout << "Reply sent!" << std::endl;
+  // std::cout << "Reply sent!" << std::endl;
   socket_mtx.unlock();
 }
 

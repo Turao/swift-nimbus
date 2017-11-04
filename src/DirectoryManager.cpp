@@ -18,9 +18,6 @@ DirectoryManager::DirectoryManager(std::string username)
             << this->path 
             << std::endl;
 
-  // this->file = new NimbusFile("/home/lenz/Desktop/test.txt");
-
-
   // check directory existence
   DIR *directory = opendir(this->path.c_str());
   if(directory == nullptr) {
@@ -80,6 +77,12 @@ DirectoryManager::~DirectoryManager()
     delete *it;
   }
   files.clear();
+}
+
+
+std::vector<NimbusFile*> DirectoryManager::getFiles()
+{
+  return this->files;
 }
 
 

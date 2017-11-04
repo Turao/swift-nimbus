@@ -2,8 +2,10 @@
 
 #include <iostream>
 #include <cstring>
+#include <vector>
 
 #include "DirectoryManager.h"
+#include "NimbusFile.h"
 #include "Utilities.h"
 
 ServerSession::ServerSession(Socket *s) :
@@ -20,6 +22,21 @@ directoryManager(nullptr)
 
   // initializes directory manager for user on server side
   this->directoryManager = new DirectoryManager(this->username);
+
+
+  // testing!!
+  
+
+  std::vector<NimbusFile*> files = this->directoryManager->getFiles();
+  for(auto it = files.begin(); it != files.end(); ++it) {
+    std::string filepath = (*it)->getFilePath();
+    std::cout << "Requesting file: " << filepath 
+              << " to client" << std::endl;
+    requestMessage = {Utilities::REQUEST, Utilities::FILE};
+    strcpy(requestMessage.content, filepath.c_str());
+    this->request(requestMessage);
+    std::this_thread::sleep_for(std::chrono::seconds(5));
+  }
 }
 
 
