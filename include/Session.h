@@ -7,6 +7,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <vector>
 
 #include "Utilities.h"
 
@@ -27,6 +28,9 @@ public:
   void reply(Utilities::Message message);
 
   void sendFile(const char *fileName);
+  void saveFile();
+
+  std::vector<char> file;
 
 protected:
 

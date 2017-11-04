@@ -24,8 +24,7 @@ directoryManager(nullptr)
   this->directoryManager = new DirectoryManager(this->username);
 
 
-  // testing!!
-  
+  // testing!!  
 
   std::vector<NimbusFile*> files = this->directoryManager->getFiles();
   for(auto it = files.begin(); it != files.end(); ++it) {
@@ -36,6 +35,12 @@ directoryManager(nullptr)
     strcpy(requestMessage.content, filepath.c_str());
     this->request(requestMessage);
   }
+
+  std::string teste = "teste.txt";
+  requestMessage = {Utilities::REQUEST, Utilities::FILE};
+  strcpy(requestMessage.content, teste.c_str());
+  Utilities::Message *replyMessage = (Utilities::Message *) this->request(requestMessage); 
+  this->handleReply(*replyMessage);
 }
 
 
@@ -99,14 +104,21 @@ void ServerSession::handleReply(Utilities::Message message)
     
     case Utilities::BEGIN_OF_FILE:
       std::cout << "Recieving: " << std::string(message.content) << std::endl;
+      this->file = std::vector<char>();
       break;
     
     case Utilities::CONTENT_OF_FILE:
       std::cout << "Content: " << std::string(message.content) << std::endl;
+      int contentPointer;
+      for (contentPointer = 0; contentPointer < message.contentSize; contentPointer++) {
+        this->file.push_back(message.content[contentPointer]);
+      }
+
       break;
 
     case Utilities::END_OF_FILE:
       std::cout << "Finishing: " << std::string(message.content) << std::endl;
+      this->saveFile();
       break;
 
     default:

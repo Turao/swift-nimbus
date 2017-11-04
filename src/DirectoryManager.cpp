@@ -8,7 +8,7 @@
 #include <sys/stat.h> // to use mkdir
 
 
-#define DEBUG_PATH_PREFIX "/home/lenz/Desktop/sync_dir_" // to-do: remove
+#define DEBUG_PATH_PREFIX "/home/leonardo/sync_dir_" // to-do: remove
 #define PATH_PREFIX "/home/sync_dir_"
 
 DirectoryManager::DirectoryManager(std::string username)

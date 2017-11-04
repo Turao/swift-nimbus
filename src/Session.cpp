@@ -192,6 +192,9 @@ void Session::sendFile(const char *fileName)
       }
     }
 
+    // remove eof char
+    offset--;
+
     // if we reach the end of file
     // but there are still bytes to send
     // (filesize % blocksize) bytes remaining
@@ -214,4 +217,16 @@ void Session::sendFile(const char *fileName)
                    strlen(fileName) };
   strcpy(replyMessage.content, fileName);
   this->reply(replyMessage);
+}
+
+void Session::saveFile() 
+{
+  std::ofstream outfile;
+  outfile.open("testes.txt", std::ofstream::binary); // to-do: change filename
+
+  if (outfile.is_open()) {
+    outfile.write((const char*) &file[0], file.size());
+    outfile.close();
+  }
+
 }
