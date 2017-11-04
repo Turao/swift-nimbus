@@ -87,10 +87,10 @@ void Socket::connect()
   }
   std::cout << "Connection established" << std::endl;
 
-  std::cout << "Changing socket to nonblocking mode" << std::endl;
-  // set socket descriptor to non-blocking mode
-  int flags = fcntl(s, F_GETFL, 0);
-  fcntl(s, F_SETFL, flags | O_NONBLOCK);
+  // std::cout << "Changing socket to nonblocking mode" << std::endl;
+  // // set socket descriptor to non-blocking mode
+  // int flags = fcntl(s, F_GETFL, 0);
+  // fcntl(s, F_SETFL, flags | O_NONBLOCK);
 }
 
 
@@ -120,9 +120,9 @@ Socket* Socket::accept()
     return nullptr;
   }
 
-  // set socket descriptor to non-blocking mode
-  int flags = fcntl(sockfd, F_GETFL, 0);
-  fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
+  // // set socket descriptor to non-blocking mode
+  // int flags = fcntl(sockfd, F_GETFL, 0);
+  // fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
 
   std::cout << "Creating accepted socket" << std::endl;
   Socket *accepted_socket = new Socket(sockfd);

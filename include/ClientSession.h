@@ -15,7 +15,8 @@ public:
 
 protected:
 private:
-  std::string username;		
+  std::string username;
+  
   void* onMessage(Utilities::Message message) override;
   void handleRequest(Utilities::Message message);
   void handleReply(Utilities::Message message);

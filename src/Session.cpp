@@ -107,10 +107,10 @@ void* Session::request(Utilities::Message request)
 {
   std::cout << "Requesting " << request.field << std::endl;
 
-  // serializes structure
+  // we need to serialize the structure:
   // (we do a reinterpret cast when sending
   // to tell the compiler to interpret the message
-  // as a byte array)
+  // as a byte array) - and bob's your uncle!
 
   // locks the mutex
   // so we can use the socket without any interference
@@ -122,19 +122,18 @@ void* Session::request(Utilities::Message request)
   std::cout << "Request sent!" << std::endl;
   std::cout << "Waiting for reply..." << std::endl;
   
-  Utilities::Message response;
+  Utilities::Message *response = new Utilities::Message();
   int status = 0;
-  if((status = socket->read(reinterpret_cast<char*>(&response), 
-                              sizeof(response))) > 0) {
+  if((status = socket->read(reinterpret_cast<char*>(response), 
+                              sizeof(Utilities::Message))) > 0) {
       std::cout << "Received response from Socket "
                 << "(" << this->socket << "): "
                 << std::endl;
-      this->handleReply(response);
     }
 
   socket_mtx.unlock();
   
-  return nullptr; //to-do: return response
+  return response;
 }
 
 void Session::reply(Utilities::Message replyMessage) 
@@ -143,56 +142,74 @@ void Session::reply(Utilities::Message replyMessage)
   std::cout << "Sending reply" << std::endl;
   this->socket->write(reinterpret_cast<char*>(&replyMessage),
                       sizeof(replyMessage));
+  std::cout << "Reply sent!" << std::endl;
   socket_mtx.unlock();
 }
 
 void Session::sendFile(const char *fileName) 
 {
   std::cout << "Sending file: " << fileName << std::endl;
-  Utilities::Message replyMessage {Utilities::REPLY, Utilities::BEGIN_OF_FILE, strlen(fileName)};
-  char *fileContent = new char[FILE_BLOCK_SIZE]();
-  int offset = 0;
 
-  // Hey, we are sending a file
 
+  Utilities::Message replyMessage { Utilities::REPLY, 
+                                    Utilities::BEGIN_OF_FILE, 
+                                    strlen(fileName) };
+  
+
+  // "Hey, we are sending a file
+  // and its name is..."
   strcpy(replyMessage.content, fileName);
   this->reply(replyMessage);
 
 
+  // opens the file and starts build blocks to send
   std::ifstream infile;
   infile.open(fileName, std::ios::binary | std::ios::in);
 
   if (infile.is_open()) {
+    char *fileContent = new char[FILE_BLOCK_SIZE]();
+    int offset = 0;
 
-    // Send full 256 byte blocks from file
-
-    while (!infile.eof()) {
+    // Keeps sending
+    // full 256 byte blocks of data
+    // until reaches end of file
+    while (!infile.eof())
+    {
+      // reads char by char until we reach block size
       infile.read(fileContent + offset, 1);
       offset++;
-      if (offset == FILE_BLOCK_SIZE)
-      {
+
+      if (offset == FILE_BLOCK_SIZE) {
         offset = 0;
-        replyMessage = {Utilities::REPLY, Utilities::CONTENT_OF_FILE, FILE_BLOCK_SIZE};
+        replyMessage = { Utilities::REPLY, 
+                         Utilities::CONTENT_OF_FILE,
+                         FILE_BLOCK_SIZE};
         memcpy(replyMessage.content, fileContent, FILE_BLOCK_SIZE);
+        // send the 256 bytes block
         this->reply(replyMessage);
       }
     }
 
-    // Send remaining bytes from file
+    // if we reach the end of file
+    // but there are still bytes to send
+    // (filesize % blocksize) bytes remaining
 
+    // Send remaining bytes from file
     if (offset > 0) {
       replyMessage = {Utilities::REPLY, Utilities::CONTENT_OF_FILE, offset};
       memcpy(replyMessage.content, fileContent, offset);
       this->reply(replyMessage);
     }
+    
+    delete[] fileContent;
   }
+  infile.close();
 
-  // Hey, the file is over
 
-  replyMessage = {Utilities::REPLY, Utilities::END_OF_FILE, strlen(fileName)};
+  // "Hey, the file is over"
+  replyMessage = { Utilities::REPLY, 
+                   Utilities::END_OF_FILE, 
+                   strlen(fileName) };
   strcpy(replyMessage.content, fileName);
   this->reply(replyMessage);
-
-  infile.close();
-  delete[] fileContent;
 }

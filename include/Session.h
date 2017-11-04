@@ -25,6 +25,7 @@ public:
 
   void* request(Utilities::Message request);
   void reply(Utilities::Message message);
+
   void sendFile(const char *fileName);
 
 protected:
@@ -38,8 +39,8 @@ private:
 
   Socket *socket;
   std::atomic<bool> alive;
-
   std::mutex socket_mtx;
+  
   virtual  void* onMessage(Utilities::Message message) = 0;
   virtual  void handleReply(Utilities::Message message) = 0;
   virtual  void handleRequest(Utilities::Message message) = 0;

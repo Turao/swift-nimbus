@@ -66,4 +66,7 @@ private:
   std::atomic<bool> _commandThread_isRunning{false};
   std::thread _commandThread;
   void commandThread();
+  void startCommandThread();
+  void stopCommandThread();
+  
 };

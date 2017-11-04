@@ -15,14 +15,16 @@ Client::Client(std::string username) :
 user(username)
 {
   std::cout << "Initializing Directory Manager" << std::endl;
-  //this->directoryManager = new DirectoryManager(user.getName());
+  this->directoryManager = new DirectoryManager(user.getName());
 
-  this->_commandThread = std::thread(&Client::commandThread, this);
+  std::cout << "Initializing command thread" << std::endl;
+  startCommandThread();
+  
 }
 
 Client::~Client()
 {
-  this->_commandThread.join();
+  stopCommandThread();
   delete directoryManager;
 }
 
@@ -82,6 +84,18 @@ void Client::closeConnection()
 {
   std::cout << "Closing session" << std::endl;
   delete session;
+}
+
+
+void Client::startCommandThread()
+{
+  this->_commandThread = std::thread(&Client::commandThread, this);
+}
+
+void Client::stopCommandThread()
+{
+  this->_commandThread_isRunning = false;
+  this->_commandThread.join();
 }
 
 void Client::commandThread()
