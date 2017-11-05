@@ -24,7 +24,7 @@ private:
   std::vector<NimbusFile*> files;
   
 
-  std::atomic<bool> _readEntries_isRunning;
-  std::thread _readEntriesThread;
-  void readEntries();
+  std::atomic<bool> _checkForNewFiles_isRunning;
+  std::thread _checkForNewFilesThread;
+  void checkForNewFiles();
 };

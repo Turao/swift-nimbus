@@ -13,7 +13,7 @@
 #define PATH_PREFIX "/home/sync_dir_"
 
 DirectoryManager::DirectoryManager(std::string username) :
-_readEntries_isRunning(false),
+_checkForNewFiles_isRunning(false),
 directory(nullptr)
 {
   this->path = DEBUG_PATH_PREFIX + username;
@@ -56,15 +56,15 @@ directory(nullptr)
   }
 
 
-  this->_readEntriesThread = std::thread(&DirectoryManager::readEntries, this);
+  this->_checkForNewFilesThread = std::thread(&DirectoryManager::checkForNewFiles, this);
 
 }
 
 
 DirectoryManager::~DirectoryManager()
 {
-  _readEntries_isRunning = false;
-  _readEntriesThread.join();
+  _checkForNewFiles_isRunning = false;
+  _checkForNewFilesThread.join();
 
   for(auto it = files.begin(); it != files.end(); ++it) {
     delete *it;
@@ -83,10 +83,10 @@ std::vector<NimbusFile*> DirectoryManager::getFiles()
 }
 
 
-void DirectoryManager::readEntries()
+void DirectoryManager::checkForNewFiles()
 {
-  this->_readEntries_isRunning = true;
-  while(_readEntries_isRunning)
+  this->_checkForNewFiles_isRunning = true;
+  while(_checkForNewFiles_isRunning)
   {
     // instantiate a NimbusFile for each file in the folder
     std::cout << "Reading sync directory entries" << std::endl;
