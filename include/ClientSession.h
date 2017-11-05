@@ -14,7 +14,7 @@ public:
   ~ClientSession();
 
 protected:
-private:
+private:  
   std::string username;
   
   void* onMessage(Utilities::Message message) override;

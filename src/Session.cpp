@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <fstream>
+#include <sys/stat.h>
 
 #include "Utilities.h"
 
@@ -156,7 +157,13 @@ void Session::sendFile(const char *fileName)
   Utilities::Message replyMessage { Utilities::REPLY, 
                                     Utilities::BEGIN_OF_FILE, 
                                     strlen(fileName) };
-  
+
+  struct stat file_stat;
+
+  if(stat(fileName, &file_stat) != -1) {
+    replyMessage.fileSize = (int) file_stat.st_size;
+    replyMessage.lastModified = file_stat.st_mtime;
+  }
 
   // "Hey, we are sending a file
   // and its name is..."

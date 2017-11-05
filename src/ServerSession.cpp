@@ -7,6 +7,7 @@
 #include "DirectoryManager.h"
 #include "NimbusFile.h"
 #include "Utilities.h"
+#include <time.h>
 
 ServerSession::ServerSession(Socket *s) :
 Session(s),
@@ -104,6 +105,8 @@ void ServerSession::handleReply(Utilities::Message message)
     
     case Utilities::BEGIN_OF_FILE:
       std::cout << "Recieving: " << std::string(message.content) << std::endl;
+      std::cout << "Filesize: " << message.fileSize << std::endl;
+      std::cout << "Lastmodified: " << asctime(localtime(&message.lastModified)) << std::endl;
       this->file = std::vector<char>();
       break;
     
