@@ -2,6 +2,9 @@
 
 #include <string>
 #include <vector>
+#include <dirent.h>
+#include <thread>
+#include <atomic>
 
 #include "NimbusFile.h"
 
@@ -11,12 +14,17 @@ public:
   DirectoryManager(std::string username);
   ~DirectoryManager();
 
-  void notify();
   std::vector<NimbusFile*> getFiles();
 
 protected:
 
 private: 
   std::string path;
+  DIR *directory;
   std::vector<NimbusFile*> files;
+  
+
+  std::atomic<bool> _readEntries_isRunning;
+  std::thread _readEntriesThread;
+  void readEntries();
 };
