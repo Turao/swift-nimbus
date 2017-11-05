@@ -31,6 +31,9 @@ public:
   void saveFile();
 
   std::vector<char> file;
+  std::string fileName;
+  int fileSize;
+  time_t fileLastModified;
 
 protected:
 
