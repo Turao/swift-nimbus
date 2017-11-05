@@ -15,9 +15,6 @@
 Client::Client(std::string username) : 
 user(username)
 {
-  std::cout << "Initializing Directory Manager" << std::endl;
-  this->directoryManager = new DirectoryManager(user.getName());
-
   std::cout << "Initializing command thread" << std::endl;
   startCommandThread();
   
@@ -37,7 +34,10 @@ int Client::connectServer(std::string host, int port)
 {
   std::cout << "Creating session" << std::endl;
   session = new ClientSession(host, port, this->user.getName());
-
+  
+  std::cout << "Initializing Directory Manager" << std::endl;
+  this->directoryManager = new DirectoryManager(user.getName(), 
+                                                session);
 
   return 0; // to-do: return something
 }

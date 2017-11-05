@@ -21,7 +21,7 @@ directoryManager(nullptr)
   handleReply(*response); // to-do: check if got the username!
 
   // initializes directory manager for user on server side
-  this->directoryManager = new DirectoryManager(this->username);
+  this->directoryManager = new DirectoryManager(this->username, this);
 
 
   // testing!!  

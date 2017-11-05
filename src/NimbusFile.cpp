@@ -9,7 +9,8 @@
 
 
 NimbusFile::NimbusFile(std::string filepath) :
-filepath (filepath)
+filepath(filepath),
+recentlyModified(false)
 {
   struct stat file_stat;
 
@@ -86,6 +87,7 @@ void NimbusFile::observer()
         this->setSize((int) file_stat.st_size);
         std::cout << "File " << this->getName() << "." << this->getExtension() << " has changed" << std::endl;
         // notify directory manager
+        this->recentlyModified = true;
       }
     }
 
@@ -152,4 +154,16 @@ int NimbusFile::getSize()
 void NimbusFile::setSize(int size)
 {
   this->size = size;
+}
+
+
+int NimbusFile::wasRecentlyModified()
+{
+  return this->recentlyModified;
+}
+
+
+void NimbusFile::resetRecentlyModified()
+{
+  this->recentlyModified = false;
 }

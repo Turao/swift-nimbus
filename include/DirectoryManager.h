@@ -5,13 +5,15 @@
 #include <dirent.h>
 #include <thread>
 #include <atomic>
+#include <mutex>
 
+#include "Session.h"
 #include "NimbusFile.h"
 
 class DirectoryManager
 {
 public:
-  DirectoryManager(std::string username);
+  DirectoryManager(std::string username, Session *session);
   ~DirectoryManager();
 
   std::vector<NimbusFile*> getFiles();
@@ -22,9 +24,17 @@ private:
   std::string path;
   DIR *directory;
   std::vector<NimbusFile*> files;
+
+  Session *session; // used to send new files to the other endpoint
   
 
   std::atomic<bool> _checkForNewFiles_isRunning;
   std::thread _checkForNewFilesThread;
   void checkForNewFiles();
+
+  std::mutex files_mtx;
+
+  std::atomic<bool> _checkForRecentlyModifiedFiles_isRunning;
+  std::thread _checkForRecentlyModifiedFilesThread;
+  void checkForRecentlyModifiedFiles();
 };
