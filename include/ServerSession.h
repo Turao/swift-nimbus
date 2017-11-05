@@ -5,7 +5,6 @@
 #include <string>
 
 #include "Socket.h"
-#include "DirectoryManager.h"
 #include "Utilities.h"
 
 
@@ -18,7 +17,6 @@ public:
 protected:
 private:
   std::string username;
-  DirectoryManager *directoryManager;
 
   void* onMessage(Utilities::Message message) override;
   void handleReply(Utilities::Message message);

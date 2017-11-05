@@ -11,6 +11,8 @@
 
 #include "Utilities.h"
 
+class DirectoryManager;
+
 class Session
 {
 public:
@@ -27,15 +29,18 @@ public:
   void* request(Utilities::Message request);
   void reply(Utilities::Message message);
 
-  void sendFile(const char *fileName);
+  void sendFile(std::string filepath);
   void saveFile();
+
+  
+
+protected:
+  DirectoryManager *directoryManager;
 
   std::vector<char> file;
   std::string fileName;
   int fileSize;
   time_t fileLastModified;
-
-protected:
 
 private:
   // thread pattern below
@@ -51,4 +56,5 @@ private:
   virtual  void* onMessage(Utilities::Message message) = 0;
   virtual  void handleReply(Utilities::Message message) = 0;
   virtual  void handleRequest(Utilities::Message message) = 0;
+
 };

@@ -9,8 +9,7 @@
 #include "Utilities.h"
 
 ServerSession::ServerSession(Socket *s) :
-Session(s),
-directoryManager(nullptr)
+Session(s)
 {
   std::cout << "Initializing Server-side session" << std::endl;
 
@@ -19,28 +18,11 @@ directoryManager(nullptr)
   requestMessage = {Utilities::REQUEST, Utilities::USERNAME};
   Utilities::Message *response = static_cast<Utilities::Message*>( this->request(requestMessage) );
   handleReply(*response); // to-do: check if got the username!
+  delete response;
 
   // initializes directory manager for user on server side
-  this->directoryManager = new DirectoryManager(this->username, this);
-
-
-  // testing!!  
-
-  std::vector<NimbusFile*> files = this->directoryManager->getFiles();
-  for(auto it = files.begin(); it != files.end(); ++it) {
-    std::string filepath = (*it)->getFilePath();
-    std::cout << "Requesting file: " << filepath 
-              << " to client" << std::endl;
-    requestMessage = {Utilities::REQUEST, Utilities::FILE};
-    strcpy(requestMessage.content, filepath.c_str());
-    this->request(requestMessage);
-  }
-
-  std::string teste = "teste.txt";
-  requestMessage = {Utilities::REQUEST, Utilities::FILE};
-  strcpy(requestMessage.content, teste.c_str());
-  Utilities::Message *replyMessage = (Utilities::Message *) this->request(requestMessage); 
-  this->handleReply(*replyMessage);
+  this->directoryManager = new DirectoryManager(username + "_server", 
+                                                this);
 }
 
 
@@ -109,7 +91,7 @@ void ServerSession::handleReply(Utilities::Message message)
       this->file = std::vector<char>();
       std::cout << "Recieving: " << this->fileName << std::endl;
       std::cout << "Filesize: " << this->fileSize << std::endl;
-      std::cout << "Lastmodified: " << asctime(localtime(&this->fileLastModified)) << std::endl;
+      std::cout << "Last Modified: " << asctime(localtime(&this->fileLastModified)) << std::endl;
       break;
     
     case Utilities::CONTENT_OF_FILE:

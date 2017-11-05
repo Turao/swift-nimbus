@@ -8,8 +8,6 @@
 #include "ClientSession.h"
 
 
-#include "DirectoryManager.h"
-
 class Client
 {
 public:
@@ -61,7 +59,7 @@ private:
   User user;
   ClientSession *session;
 
-  DirectoryManager *directoryManager;
+  
 
   std::atomic<bool> _commandThread_isRunning{false};
   std::thread _commandThread;

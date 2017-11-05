@@ -86,6 +86,12 @@ DirectoryManager::~DirectoryManager()
 }
 
 
+std::string DirectoryManager::getPath()
+{
+  return this->path;
+}
+
+
 std::vector<NimbusFile*> DirectoryManager::getFiles()
 {
   return this->files;

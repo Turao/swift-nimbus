@@ -9,10 +9,12 @@
 #include <fstream>
 #include <sys/stat.h>
 
+#include "DirectoryManager.h"
 #include "Utilities.h"
 
 Session::Session(std::string host, int port) :
-alive(true)
+alive(true),
+directoryManager(nullptr)
 {
   socket = new Socket(host, port);
   socket->connect();
@@ -24,7 +26,8 @@ alive(true)
 
 Session::Session(Socket *s) :
 socket(s),
-alive(true)
+alive(true),
+directoryManager(nullptr)
 {
   // initializes read thread
   startListening();
@@ -149,31 +152,35 @@ void Session::reply(Utilities::Message replyMessage)
   socket_mtx.unlock();
 }
 
-void Session::sendFile(const char *fileName) 
+void Session::sendFile(std::string filepath) 
 {
-  std::cout << "Sending file: " << fileName << std::endl;
+  std::cout << "Sending file: " << filepath << std::endl;
+
+  // to-do: break down filepath to send only file name
+  size_t pos = filepath.find_last_of("/\\");
+  std::string fileName = filepath.substr(pos+1);
 
 
   Utilities::Message replyMessage { Utilities::REPLY, 
                                     Utilities::BEGIN_OF_FILE, 
-                                    strlen(fileName) };
+                                    fileName.size() };
 
   struct stat file_stat;
 
-  if(stat(fileName, &file_stat) != -1) {
+  if(stat(filepath.c_str(), &file_stat) != -1) {
     replyMessage.fileSize = (int) file_stat.st_size;
     replyMessage.lastModified = file_stat.st_mtime;
   }
 
   // "Hey, we are sending a file
   // and its name is..."
-  strcpy(replyMessage.content, fileName);
+  fileName.copy(replyMessage.content, fileName.size());
   this->reply(replyMessage);
 
 
   // opens the file and starts build blocks to send
   std::ifstream infile;
-  infile.open(fileName, std::ios::binary | std::ios::in);
+  infile.open(filepath, std::ios::binary | std::ios::in);
 
   if (infile.is_open()) {
     char *fileContent = new char[FILE_BLOCK_SIZE]();
@@ -221,15 +228,23 @@ void Session::sendFile(const char *fileName)
   // "Hey, the file is over"
   replyMessage = { Utilities::REPLY, 
                    Utilities::END_OF_FILE, 
-                   strlen(fileName) };
-  strcpy(replyMessage.content, fileName);
+                   fileName.size() };
+  fileName.copy(replyMessage.content, fileName.size());
   this->reply(replyMessage);
 }
 
 void Session::saveFile() 
 {
+  std::string filepath = this->directoryManager->getPath()
+                       + "/"
+                       + this->fileName;
+
+  std::cout << "Saving file: " << this->fileName 
+            << " at : " << filepath
+            << std::endl;
+
   std::ofstream outfile;
-  outfile.open("testes.txt", std::ofstream::binary); // to-do: change filename
+  outfile.open(filepath, std::ofstream::binary);
 
   if (outfile.is_open()) {
     outfile.write((const char*) &file[0], file.size());

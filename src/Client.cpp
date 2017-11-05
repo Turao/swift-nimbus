@@ -23,7 +23,6 @@ user(username)
 Client::~Client()
 {
   stopCommandThread();
-  delete directoryManager;
 }
 
 /* Connects the client to the server
@@ -35,10 +34,6 @@ int Client::connectServer(std::string host, int port)
   std::cout << "Creating session" << std::endl;
   session = new ClientSession(host, port, this->user.getName());
   
-  std::cout << "Initializing Directory Manager" << std::endl;
-  this->directoryManager = new DirectoryManager(user.getName(), 
-                                                session);
-
   return 0; // to-do: return something
 }
 

@@ -4,6 +4,7 @@
 #include <string>
 #include <cstring>
 
+#include "DirectoryManager.h"
 #include "Utilities.h"
 
 ClientSession::ClientSession(std::string host, int port, std::string username) :
@@ -11,11 +12,16 @@ Session(host, port),
 username(username)
 {
   std::cout << "Initializing Client-side session" << std::endl;
+
+  std::cout << "Initializing Directory Manager" << std::endl;
+  this->directoryManager = new DirectoryManager(username, 
+                                                this);
 }
 
 
 ClientSession::~ClientSession()
 { 
+  delete directoryManager;
 }
 
 void* ClientSession::onMessage(Utilities::Message message)

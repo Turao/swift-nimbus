@@ -39,7 +39,7 @@ recentlyModified(false)
   std::cout << "File name: " << this->getName() << std::endl;
   std::cout << "File extension: " << this->getExtension() << std::endl;
   std::cout << "File size: " << this->getSize() << " bytes" << std::endl;
-  std::cout << "Last Modified: " << this->getLastModified() << std::endl;
+  std::cout << "Last modified: " << this->getLastModified() << std::endl;
   this->startObserver();
 }
 

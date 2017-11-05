@@ -16,6 +16,7 @@ public:
   DirectoryManager(std::string username, Session *session);
   ~DirectoryManager();
 
+  std::string getPath();
   std::vector<NimbusFile*> getFiles();
 
 protected:
