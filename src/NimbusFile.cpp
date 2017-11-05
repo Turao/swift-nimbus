@@ -39,7 +39,6 @@ filepath (filepath)
   std::cout << "File extension: " << this->getExtension() << std::endl;
   std::cout << "File size: " << this->getSize() << " bytes" << std::endl;
   std::cout << "Last Modified: " << this->getLastModified() << std::endl;
-
   this->startObserver();
 }
 

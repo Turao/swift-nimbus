@@ -2,6 +2,8 @@
 
 #define FILE_BLOCK_SIZE 256
 
+#include <time.h>
+
 namespace Utilities
 {
 
@@ -24,6 +26,8 @@ namespace Utilities
     Field field;
     int contentSize;
     char content[FILE_BLOCK_SIZE];
+    int fileSize;
+    time_t lastModified;
   } Message;
   
 }
