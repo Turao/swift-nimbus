@@ -305,3 +305,26 @@ void Session::saveFile()
   }
 
 }
+
+void Session::sendDeletedFile(std::string filepath)
+{
+  size_t pos = filepath.find_last_of("/\\");
+  std::string fileName = filepath.substr(pos+1);
+
+  Utilities::Message message { Utilities::REQUEST, 
+                               Utilities::DELETE_FILE, 
+                               fileName.size() };
+
+  fileName.copy(message.content, fileName.size());
+  this->request(message);
+}
+
+void Session::deleteFile(std::string fileName)
+{
+  std::string filepath = this->directoryManager->getPath()
+                       + "/"
+                       + this->fileName;
+
+  if (remove(filepath.c_str()) == 0) 
+    std::cout << "File " << fileName << " deleted" << std::endl;
+}

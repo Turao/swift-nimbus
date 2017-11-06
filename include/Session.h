@@ -31,6 +31,8 @@ public:
 
   void sendFile(std::string filepath);
   void saveFile();
+  void sendDeletedFile(std::string filepath);
+  void deleteFile(std::string filename);
 
   
 

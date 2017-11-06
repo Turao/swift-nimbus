@@ -18,6 +18,7 @@ namespace Utilities
     CONTENT_OF_FILE = 3,
     END_OF_FILE = 4,
     FILE = 5,
+    DELETE_FILE = 6,
     OTHER
   };
 

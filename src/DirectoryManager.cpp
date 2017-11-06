@@ -5,12 +5,13 @@
 #include <cstring>
 
 
+#include <fstream>
 #include <dirent.h> // directory opening and entries reading
 #include <sys/stat.h> // to use mkdir
 
 #include "NimbusFile.h"
 
-#define DEBUG_PATH_PREFIX "/home/lenz/Desktop/sync_dir_" // to-do: remove
+#define DEBUG_PATH_PREFIX "/home/leonardo/sync_dir_" // to-do: remove
 #define PATH_PREFIX "/home/sync_dir_"
 
 DirectoryManager::DirectoryManager(std::string username, Session *session) :
@@ -63,6 +64,8 @@ session(session)
 
   // std::this_thread::sleep_for(std::chrono::seconds(15));
   this->_checkForRecentlyModifiedFilesThread = std::thread(&DirectoryManager::checkForRecentlyModifiedFiles, this);
+
+  this->_checkForDeletedFilesThread = std::thread(&DirectoryManager::checkForDeletedFiles, this);
 
 }
 
@@ -169,6 +172,34 @@ void DirectoryManager::checkForRecentlyModifiedFiles()
         // send file to other endpoint
         this->session->sendFile(file->getFilePath().c_str());
         file->resetRecentlyModified();
+      }
+    }
+    files_mtx.unlock();
+    
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+}
+
+void DirectoryManager::checkForDeletedFiles()
+{
+  std::cout << "Checking for deleted files" << std::endl;
+  
+
+  this->_checkForDeletedFiles_isRunning = true;
+  while(_checkForDeletedFiles_isRunning)
+  {
+    files_mtx.lock();
+    for(auto it = files.begin(); it != files.end();)
+    {
+      NimbusFile *file = *it;
+      std::string filepath = this->getPath() + "/" + file->getName() + "." + file->getExtension();
+      if(!std::ifstream(filepath)) {
+        this->session->sendDeletedFile(filepath);
+        delete *it;
+        it = files.erase(it);
+      }
+      else {
+        ++it;
       }
     }
     files_mtx.unlock();
