@@ -11,7 +11,7 @@
 
 #include "NimbusFile.h"
 
-#define DEBUG_PATH_PREFIX "/home/leonardo/sync_dir_" // to-do: remove
+#define DEBUG_PATH_PREFIX "/home/lenz/sync_dir_" // to-do: remove
 #define PATH_PREFIX "/home/sync_dir_"
 
 DirectoryManager::DirectoryManager(std::string username, Session *session) :
@@ -194,7 +194,7 @@ void DirectoryManager::checkForDeletedFiles()
       NimbusFile *file = *it;
       std::string filepath = this->getPath() + "/" + file->getName() + "." + file->getExtension();
       if(!std::ifstream(filepath)) {
-        this->session->sendDeletedFile(filepath);
+        this->session->requestDeleteFile(filepath);
         delete *it;
         it = files.erase(it);
       }

@@ -306,7 +306,7 @@ void Session::saveFile()
 
 }
 
-void Session::sendDeletedFile(std::string filepath)
+void Session::requestDeleteFile(std::string filepath)
 {
   size_t pos = filepath.find_last_of("/\\");
   std::string fileName = filepath.substr(pos+1);

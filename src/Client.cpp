@@ -76,6 +76,7 @@ void Client::getFile(std::string file)
 void Client::deleteFile(std::string file)
 {
   std::cout << "Deleting file: " << file << std::endl;
+  this->session->deleteFile(file);
 }
 
 /* Closes the connection with the server
