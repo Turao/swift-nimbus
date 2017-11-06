@@ -14,14 +14,14 @@ public:
   std::string getFilePath();
   std::string getName();
   std::string getExtension();
-  std::string getLastModified();
+  time_t getLastModified();
   int getSize();
   int wasRecentlyModified();
 
   void setFilePath(std::string filepath);
   void setName(std::string name);
   void setExtension(std::string extension);
-  void setLastModified(std::string lastModified);
+  void setLastModified(time_t lastModified);
   void setSize(int size);
   void resetRecentlyModified();
 
@@ -34,7 +34,7 @@ private:
   std::string filepath;
   std::string name;
   std::string extension;
-  std::string lastModified;
+  time_t lastModified;
   int size;
 
   bool recentlyModified;

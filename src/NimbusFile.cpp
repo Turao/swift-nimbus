@@ -32,14 +32,16 @@ recentlyModified(false)
   this->setFilePath(filepath);
   this->setName(fileName);
   this->setExtension(fileExt);
-  this->setLastModified(asctime(localtime(&file_stat.st_mtime)));
+  this->setLastModified(file_stat.st_mtime);
   this->setSize((int) file_stat.st_size);
 
   std::cout << "File path: " << this->getFilePath() << std::endl;
   std::cout << "File name: " << this->getName() << std::endl;
   std::cout << "File extension: " << this->getExtension() << std::endl;
   std::cout << "File size: " << this->getSize() << " bytes" << std::endl;
-  std::cout << "Last modified: " << this->getLastModified() << std::endl;
+  std::cout << "Last modified: " 
+            << asctime(localtime(&file_stat.st_mtime))
+            << std::endl;
   this->startObserver();
 }
 
@@ -70,20 +72,15 @@ void NimbusFile::stopObserver()
 void NimbusFile::observer()
 {
   struct stat file_stat;
-  struct tm tm;
-  time_t lastModified;
 
   std::cout << "Initializing file observer thread" << std::endl;
   this->_observer_isRunning = true;
 
   while(_observer_isRunning)
   {
-    strptime(this->getLastModified().c_str(), "%a %b %d %T %Y", &tm);
-    lastModified = mktime(&tm);
-
     if(stat(this->getFilePath().c_str(), &file_stat) != -1) {
-      if (difftime(file_stat.st_mtime, lastModified) > 0) {
-        this->setLastModified(asctime(localtime(&file_stat.st_mtime)));
+      if (difftime(file_stat.st_mtime, this->getLastModified()) > 0) {
+        this->setLastModified(file_stat.st_mtime);
         this->setSize((int) file_stat.st_size);
         std::cout << "File " << this->getName() << "." << this->getExtension() << " has changed" << std::endl;
         // notify directory manager
@@ -133,13 +130,13 @@ void NimbusFile::setExtension(std::string extension)
 }
 
 
-std::string NimbusFile::getLastModified()
+time_t NimbusFile::getLastModified()
 {
   return this->lastModified;
 }
 
 
-void NimbusFile::setLastModified(std::string lastModified)
+void NimbusFile::setLastModified(time_t lastModified)
 {
   this->lastModified = lastModified;
 }

@@ -235,20 +235,40 @@ void Session::sendFile(std::string filepath)
 
 void Session::saveFile() 
 {
+  bool shouldSave = true;
+
+
   std::string filepath = this->directoryManager->getPath()
                        + "/"
                        + this->fileName;
 
-  std::cout << "Saving file: " << this->fileName 
-            << " at : " << filepath
-            << std::endl;
+  // first, we check if we already have
+  // the file in sync_dir
+  struct stat file_stat;                       
+  if(stat(filepath.c_str(), &file_stat) == 0) {
+    // there is a file with this name
+    // now, we check wheter the received file
+    // is older (or 'equal') than the one we have
+    if(difftime(file_stat.st_mtime, this->fileLastModified) <= 0) {
+      // file is not newer, shouldn't save
+      shouldSave = false;
+    }
+  }
 
-  std::ofstream outfile;
-  outfile.open(filepath, std::ofstream::binary);
 
-  if (outfile.is_open()) {
-    outfile.write((const char*) &file[0], file.size());
-    outfile.close();
+  if(shouldSave) {
+    std::cout << "Saving file: " << this->fileName 
+              << " at : " << filepath
+              << std::endl;
+
+
+    std::ofstream outfile;
+    outfile.open(filepath, std::ofstream::binary);
+
+    if (outfile.is_open()) {
+      outfile.write((const char*) &file[0], file.size());
+      outfile.close();
+    } 
   }
 
 }

@@ -76,19 +76,27 @@ void ClientSession::handleReply(Utilities::Message message)
   switch (message.field)
   {    
     case Utilities::BEGIN_OF_FILE:
-      std::cout << "Recieving: " << std::string(message.content) << std::endl;
+      this->fileName = std::string(message.content);
+      this->fileSize = message.fileSize;
+      this->fileLastModified = message.lastModified;
+      this->file = std::vector<char>();
+      std::cout << "Recieving: " << this->fileName << std::endl;
+      std::cout << "Filesize: " << this->fileSize << std::endl;
+      std::cout << "Last Modified: " << asctime(localtime(&this->fileLastModified)) << std::endl;
       break;
     
     case Utilities::CONTENT_OF_FILE:
       std::cout << "Content: " << std::string(message.content) << std::endl;
+      int contentPointer;
+      for (contentPointer = 0; contentPointer < message.contentSize; contentPointer++) {
+        this->file.push_back(message.content[contentPointer]);
+      }
+
       break;
 
     case Utilities::END_OF_FILE:
       std::cout << "Finishing: " << std::string(message.content) << std::endl;
-      break;
-
-    default:
-      std::cout << "Message with unknown field" << std::endl;
+      this->saveFile();
       break;
   }
 }
