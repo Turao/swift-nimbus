@@ -15,7 +15,7 @@ Session(s)
 
   // requests username
   Utilities::Message requestMessage;
-  requestMessage = {Utilities::REQUEST, Utilities::USERNAME};
+  requestMessage = { Utilities::REQUEST, Utilities::USERNAME };
   Utilities::Message *response = static_cast<Utilities::Message*>( this->request(requestMessage) );
   handleReply(*response); // to-do: check if got the username!
   delete response;

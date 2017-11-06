@@ -7,6 +7,8 @@
 
 #include <cstring>
 #include <fstream>
+
+#include <utime.h> // to set manually the last modified timestamp
 #include <sys/stat.h>
 
 #include "DirectoryManager.h"
@@ -236,6 +238,7 @@ void Session::sendFile(std::string filepath)
 void Session::saveFile() 
 {
   bool shouldSave = true;
+  bool shouldSync = false;
 
 
   std::string filepath = this->directoryManager->getPath()
@@ -246,13 +249,32 @@ void Session::saveFile()
   // the file in sync_dir
   struct stat file_stat;                       
   if(stat(filepath.c_str(), &file_stat) == 0) {
+    std::cout << "Found a file with same name" << std::endl;
+    std::cout << "Local file last modified at: " 
+              << asctime(localtime(&file_stat.st_mtime))
+              << std::endl;
+
+    std::cout << "Received file last modified at: "
+              << asctime(localtime(&(this->fileLastModified)))
+              << std::endl;
+
     // there is a file with this name
-    // now, we check wheter the received file
-    // is older (or 'equal') than the one we have
-    if(difftime(file_stat.st_mtime, this->fileLastModified) <= 0) {
-      // file is not newer, shouldn't save
+    // now, we must check the file's modification info
+    if(difftime(file_stat.st_mtime, this->fileLastModified) > 0) {
+      std::cout << "Local file is newer than received one" 
+                << std::endl;
+      // local file is newer, shouldn't save
+      // and should sync with remote
+      shouldSave = false;
+      shouldSync = true;
+    }
+    else if(difftime(file_stat.st_mtime, this->fileLastModified) == 0) {
+      std::cout << "Local file and received one are the same" 
+                << std::endl;
+      // local and remote file are the same
       shouldSave = false;
     }
+
   }
 
 
@@ -261,6 +283,8 @@ void Session::saveFile()
               << " at : " << filepath
               << std::endl;
 
+    utimbuf access_modified_times = { file_stat.st_atime, 
+                                      this->fileLastModified };
 
     std::ofstream outfile;
     outfile.open(filepath, std::ofstream::binary);
@@ -268,7 +292,16 @@ void Session::saveFile()
     if (outfile.is_open()) {
       outfile.write((const char*) &file[0], file.size());
       outfile.close();
+      utime(filepath.c_str(), &access_modified_times);
     } 
+  }
+  
+
+  if(shouldSync) {
+    // when the local file is newer than the one received
+    // we upload so that the other endpoint can have the most-recent
+    // file as well
+    this->sendFile(filepath);
   }
 
 }
