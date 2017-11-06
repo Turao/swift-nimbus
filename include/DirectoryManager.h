@@ -38,4 +38,8 @@ private:
   std::atomic<bool> _checkForRecentlyModifiedFiles_isRunning;
   std::thread _checkForRecentlyModifiedFilesThread;
   void checkForRecentlyModifiedFiles();
+
+  std::atomic<bool> _checkForDeletedFiles_isRunning;
+  std::thread _checkForDeletedFilesThread;
+  void checkForDeletedFiles();
 };

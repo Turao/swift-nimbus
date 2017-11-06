@@ -68,6 +68,11 @@ void ServerSession::handleRequest(Utilities::Message message)
       this->sendFile(message.content);
       break;
 
+    case Utilities::DELETE_FILE:
+      std::cout << "Request to delete file: " << message.content << std::endl;
+      this->deleteFile(message.content);
+      break;
+
     default:
       std::cout << "Unknown field requested" << std::endl;
       break;
