@@ -11,7 +11,7 @@
 
 #include "NimbusFile.h"
 
-#define DEBUG_PATH_PREFIX "/home/lenz/sync_dir_" // to-do: remove
+#define DEBUG_PATH_PREFIX "/home/leonardo/sync_dir_" // to-do: remove
 #define PATH_PREFIX "/home/sync_dir_"
 
 DirectoryManager::DirectoryManager(std::string username, Session *session) :
@@ -77,6 +77,9 @@ DirectoryManager::~DirectoryManager()
 
   _checkForRecentlyModifiedFiles_isRunning = false;
   _checkForRecentlyModifiedFilesThread.join();
+
+  _checkForDeletedFiles_isRunning = false;
+  _checkForDeletedFilesThread.join();
 
   for(auto it = files.begin(); it != files.end(); ++it) {
     delete *it;
@@ -206,4 +209,31 @@ void DirectoryManager::checkForDeletedFiles()
     
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
+}
+
+void DirectoryManager::printDir()
+{
+  files_mtx.lock();
+  for(auto it = files.begin(); it != files.end(); ++it) {
+    NimbusFile *file = *it;
+    std::string fileName = file->getName() + "." + file->getExtension();
+    time_t lastModified = file->getLastModified();
+    time_t statusChange = file->getStatusChange();
+    time_t lastAccess = file->getLastAccess();
+    std::cout << "File on client: " << fileName << std::endl;
+    std::cout << "Last Modified: " << asctime(localtime(&lastModified)) << std::endl;
+    std::cout << "Status Change: " << asctime(localtime(&statusChange)) << std::endl;
+    std::cout << "Last Access: " << asctime(localtime(&lastAccess)) << std::endl;
+  }
+  files_mtx.unlock();
+}
+
+void DirectoryManager::lockFiles()
+{
+  files_mtx.lock();
+}
+
+void DirectoryManager::unlockFiles()
+{
+  files_mtx.unlock();
 }

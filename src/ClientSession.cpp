@@ -14,8 +14,6 @@ username(username)
   std::cout << "Initializing Client-side session" << std::endl;
 
   std::cout << "Initializing Directory Manager" << std::endl;
-  this->directoryManager = new DirectoryManager(username, 
-                                                this);
 }
 
 
@@ -103,5 +101,23 @@ void ClientSession::handleReply(Utilities::Message message)
       std::cout << "Finishing: " << std::string(message.content) << std::endl;
       this->saveFile();
       break;
+
+    case Utilities::LIST_FILES:
+      std::cout << "File on server: " << std::string(message.content) << std::endl;
+      std::cout << "Last Modified: " << asctime(localtime(&message.lastModified)) << std::endl;
+      std::cout << "Status Change: " << asctime(localtime(&message.statusChange)) << std::endl;
+      std::cout << "Last Access: " << asctime(localtime(&message.lastAccess)) << std::endl;
+      break;
   }
+}
+
+void ClientSession::initializeDirectoryManager()
+{
+  this->directoryManager = new DirectoryManager(this->username, 
+                                                this);
+}
+
+void ClientSession::printLocalDir()
+{
+  this->directoryManager->printDir();
 }

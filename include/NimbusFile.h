@@ -15,6 +15,8 @@ public:
   std::string getName();
   std::string getExtension();
   time_t getLastModified();
+  time_t getStatusChange();
+  time_t getLastAccess();
   int getSize();
   int wasRecentlyModified();
 
@@ -22,6 +24,8 @@ public:
   void setName(std::string name);
   void setExtension(std::string extension);
   void setLastModified(time_t lastModified);
+  void setStatusChange(time_t statusChange);
+  void setLastAccess(time_t lastAccess);
   void setSize(int size);
   void resetRecentlyModified();
 
@@ -35,6 +39,8 @@ private:
   std::string name;
   std::string extension;
   time_t lastModified;
+  time_t statusChange;
+  time_t lastAccess;
   int size;
 
   bool recentlyModified;

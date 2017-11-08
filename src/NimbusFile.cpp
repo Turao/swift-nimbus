@@ -33,6 +33,8 @@ recentlyModified(false)
   this->setName(fileName);
   this->setExtension(fileExt);
   this->setLastModified(file_stat.st_mtime);
+  this->setStatusChange(file_stat.st_ctime);
+  this->setLastAccess(file_stat.st_atime);
   this->setSize((int) file_stat.st_size);
 
   std::cout << "File path: " << this->getFilePath() << std::endl;
@@ -139,6 +141,30 @@ time_t NimbusFile::getLastModified()
 void NimbusFile::setLastModified(time_t lastModified)
 {
   this->lastModified = lastModified;
+}
+
+
+time_t NimbusFile::getStatusChange()
+{
+  return this->statusChange;
+}
+
+
+void NimbusFile::setStatusChange(time_t statusChange)
+{
+  this->statusChange = statusChange;
+}
+
+
+time_t NimbusFile::getLastAccess()
+{
+  return this->lastAccess;
+}
+
+
+void NimbusFile::setLastAccess(time_t lastAccess)
+{
+  this->lastAccess = lastAccess;
 }
 
 

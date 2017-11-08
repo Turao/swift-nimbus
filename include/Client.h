@@ -53,6 +53,10 @@ public:
   */
   void closeConnection();
 
+  void listClientDir();
+
+  void listServerDir();
+
 
 protected:
 private:

@@ -42,7 +42,7 @@ int Client::connectServer(std::string host, int port)
 */
 void Client::syncClient()
 {
-
+  this->session->initializeDirectoryManager();
 }
 
 /* Uploads a local file to the server
@@ -87,6 +87,20 @@ void Client::closeConnection()
   delete session;
 }
 
+void Client::listClientDir()
+{
+  this->session->printLocalDir();
+}
+
+void Client::listServerDir()
+{
+  Utilities::Message request = { Utilities::REQUEST,
+                                 Utilities::LIST_FILES };
+  Utilities::Message *response = static_cast<Utilities::Message*>( this->session->request(request) );
+  this->session->handleReply(*response);
+  delete response;
+}
+
 
 void Client::startCommandThread()
 {
@@ -102,17 +116,32 @@ void Client::stopCommandThread()
 void Client::commandThread()
 {
   _commandThread_isRunning = true;
-  std::string command, argument;
+  std::string input, command, argument;
   while(_commandThread_isRunning)
   {
-    std::cin >> command >> argument;
+    std::getline (std::cin, input);
+    int pos = input.find_first_of(" ");
+    command = input.substr(0, pos);
+    argument = input.substr(pos+1);
+
+    std::cout << "Command: " << command
+              << "Argument: " << argument
+              << std::endl;
     
-    if(command.compare("sendFile") == 0)
+    if(command.compare("upload") == 0)
       sendFile(argument);
-    else if(command.compare("getFile") == 0)
+    else if(command.compare("download") == 0)
       getFile(argument);
     else if(command.compare("deleteFile") == 0)
       deleteFile(argument);
+    else if(command.compare("get_sync_dir") == 0)
+      syncClient();
+    else if(command.compare("exit") == 0)
+      closeConnection();
+    else if(command.compare("list_server") == 0)
+      listServerDir();
+    else if(command.compare("list_client") == 0)
+      listClientDir();
     else
       std::cout << "Unknown command" << std::endl;
 

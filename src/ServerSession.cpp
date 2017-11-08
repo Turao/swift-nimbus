@@ -73,6 +73,10 @@ void ServerSession::handleRequest(Utilities::Message message)
       this->deleteFile(message.content);
       break;
 
+    case Utilities::LIST_FILES:
+      this->sendFilesList();
+      break;
+
     default:
       std::cout << "Unknown field requested" << std::endl;
       break;
@@ -117,4 +121,25 @@ void ServerSession::handleReply(Utilities::Message message)
       std::cout << "Message with unknown field" << std::endl;
       break;
 	}
+}
+
+void ServerSession::sendFilesList()
+{
+  this->directoryManager->lockFiles();
+
+  std::vector<NimbusFile*> dirFiles = this->directoryManager->getFiles();
+
+  for(auto it = dirFiles.begin(); it != dirFiles.end(); ++it) {
+    NimbusFile *file = *it;
+    Utilities::Message reply = { Utilities::REPLY,
+                                 Utilities::LIST_FILES };
+    std::string fileName = file->getName() + "." + file->getExtension();
+    strncpy(reply.content, fileName.c_str(), FILE_BLOCK_SIZE);
+    reply.lastModified = file->getLastModified();
+    reply.statusChange = file->getStatusChange();
+    reply.lastAccess = file->getLastAccess();
+    this->reply(reply);
+  }
+
+  this->directoryManager->unlockFiles();
 }

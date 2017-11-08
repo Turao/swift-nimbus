@@ -19,6 +19,7 @@ namespace Utilities
     END_OF_FILE = 4,
     FILE = 5,
     DELETE_FILE = 6,
+    LIST_FILES = 7,
     OTHER
   };
 
@@ -29,6 +30,8 @@ namespace Utilities
     char content[FILE_BLOCK_SIZE];
     int fileSize;
     time_t lastModified;
+    time_t statusChange;
+    time_t lastAccess;
   } Message;
   
 }

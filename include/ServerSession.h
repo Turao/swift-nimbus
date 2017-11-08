@@ -21,5 +21,6 @@ private:
   void* onMessage(Utilities::Message message) override;
   void handleReply(Utilities::Message message);
   void handleRequest(Utilities::Message message);
+  void sendFilesList();
   
 };
