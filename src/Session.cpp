@@ -241,9 +241,15 @@ void Session::saveFile()
   bool shouldSync = false;
 
 
-  std::string filepath = this->directoryManager->getPath()
-                       + "/"
-                       + this->fileName;
+  std::string filepath;
+
+  if (this->downloadToCurrDir) {
+    filepath = this->fileName;
+    this->downloadToCurrDir = false;
+  }
+  else {
+    filepath = this->directoryManager->getPath() + "/" + this->fileName;
+  }
 
   // first, we check if we already have
   // the file in sync_dir

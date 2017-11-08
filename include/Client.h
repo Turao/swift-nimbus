@@ -31,7 +31,7 @@ public:
   *
   *  file: file path
   */
-  void sendFile(std::string file);
+  void sendFile(std::string path);
 
 
   /* Downloads a file from the server

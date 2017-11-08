@@ -19,7 +19,7 @@ _checkForNewFiles_isRunning(false),
 directory(nullptr),
 session(session)
 {
-  this->path = DEBUG_PATH_PREFIX + username;
+  this->path = PATH_PREFIX + username;
   std::cout << "Directory Manager initialized at: " 
             << this->path 
             << std::endl;

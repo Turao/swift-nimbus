@@ -49,10 +49,11 @@ void Client::syncClient()
 *
 *  file: file path
 */
-void Client::sendFile(std::string file)
+void Client::sendFile(std::string path)
 {
-  std::cout << "Uploading file: " << file << std::endl;
-  this->session->sendFile(file.c_str());
+  std::cout << "Uploading file: " << path << std::endl;
+
+  this->session->sendFile(path.c_str());
 }
 
 /* Downloads a file from the server
@@ -65,6 +66,8 @@ void Client::getFile(std::string file)
   Utilities::Message request = { Utilities::REQUEST,
                                  Utilities::FILE };
   strncpy(request.content, file.c_str(), FILE_BLOCK_SIZE);
+
+  this->session->downloadToCurrDir = true;
   this->session->request(request);
 }
 
