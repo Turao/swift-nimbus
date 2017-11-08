@@ -329,7 +329,7 @@ void Session::deleteFile(std::string fileName)
 {
   std::string filepath = this->directoryManager->getPath()
                        + "/"
-                       + this->fileName;
+                       + fileName;
 
   if (remove(filepath.c_str()) == 0) 
     std::cout << "File " << fileName << " deleted" << std::endl;
