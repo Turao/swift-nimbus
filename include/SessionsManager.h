@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <mutex>
 
 #include "ServerSession.h"
 
@@ -19,6 +20,8 @@ protected:
 private:
   Socket *master;
   std::vector<ServerSession*> sessions;
+
+  std::mutex sessions_mtx;
 
   std::atomic<bool> _scrubber_isRunning;
   std::thread scrubberThread;

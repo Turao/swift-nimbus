@@ -90,18 +90,14 @@ void Client::closeConnection()
   delete session;
 }
 
-void Client::listClientDir()
+void Client::listClientDirectoryEntries()
 {
-  this->session->printLocalDir();
+  this->session->printLocalDirectoryEntries();
 }
 
-void Client::listServerDir()
+void Client::listServerDirectoryEntries()
 {
-  Utilities::Message request = { Utilities::REQUEST,
-                                 Utilities::LIST_FILES };
-  Utilities::Message *response = static_cast<Utilities::Message*>( this->session->request(request) );
-  this->session->handleReply(*response);
-  delete response;
+  this->session->requestServerDirectoryEntries();
 }
 
 
@@ -142,9 +138,9 @@ void Client::commandThread()
     else if(command.compare("exit") == 0)
       closeConnection();
     else if(command.compare("list_server") == 0)
-      listServerDir();
+      listServerDirectoryEntries();
     else if(command.compare("list_client") == 0)
-      listClientDir();
+      listClientDirectoryEntries();
     else
       std::cout << "Unknown command" << std::endl;
 

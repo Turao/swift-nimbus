@@ -46,6 +46,7 @@ void SessionsManager::scrubber()
   this->_scrubber_isRunning = true;
   while(_scrubber_isRunning)
   {
+    sessions_mtx.lock();
     for(auto it = sessions.begin(); it != sessions.end();)
     {
       if(!(*it)->isAlive()) {
@@ -58,6 +59,7 @@ void SessionsManager::scrubber()
       else {
         ++it;
       }
+      sessions_mtx.unlock();
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
@@ -82,7 +84,9 @@ void SessionsManager::connectionsHandler()
     if(response != nullptr) {
       std::cout << "New connection on master socket" << std::endl;
       ServerSession *session = new ServerSession(response);
+      sessions_mtx.lock();
       this->sessions.push_back(session);
+      sessions_mtx.unlock();
     }
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }

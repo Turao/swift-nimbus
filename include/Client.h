@@ -53,16 +53,22 @@ public:
   */
   void closeConnection();
 
-  void listClientDir();
+  /* Lists all entries within the 
+  *  local sync directory
+  */
+  void listClientDirectoryEntries();
 
-  void listServerDir();
+
+  /* Lists all entries within the 
+  *  remote's sync directory
+  */
+  void listServerDirectoryEntries();
 
 
 protected:
 private:
   User user;
   ClientSession *session;
-
   
 
   std::atomic<bool> _commandThread_isRunning{false};

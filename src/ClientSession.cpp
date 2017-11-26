@@ -117,7 +117,16 @@ void ClientSession::initializeDirectoryManager()
                                                 this);
 }
 
-void ClientSession::printLocalDir()
+void ClientSession::printLocalDirectoryEntries()
 {
-  this->directoryManager->printDir();
+  this->directoryManager->printDirectoryEntries();
+}
+
+void ClientSession::requestServerDirectoryEntries()
+{
+  Utilities::Message message = { Utilities::REQUEST,
+                                 Utilities::LIST_FILES };
+  Utilities::Message *response = static_cast<Utilities::Message*>( request(message) );
+  handleReply(*response);
+  delete response;
 }

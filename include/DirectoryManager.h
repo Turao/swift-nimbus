@@ -18,7 +18,9 @@ public:
 
   std::string getPath();
   std::vector<NimbusFile*> getFiles();
-  void printDir();
+  
+  void printDirectoryEntries();
+  
   void lockFiles();
   void unlockFiles();
 

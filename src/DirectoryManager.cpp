@@ -211,7 +211,7 @@ void DirectoryManager::checkForDeletedFiles()
   }
 }
 
-void DirectoryManager::printDir()
+void DirectoryManager::printDirectoryEntries()
 {
   files_mtx.lock();
   for(auto it = files.begin(); it != files.end(); ++it) {
