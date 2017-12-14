@@ -16,8 +16,8 @@
 #include <openssl/ssl.h> // Open SSL
 #include <openssl/err.h> // Open SSL errors
 
-#define CERTIFICATE_FILEPATH "./CertFile.pem"
-#define PRIVATE_KEY_FILEPATH "./WingedKey.pem"
+#define CERTIFICATE_FILEPATH "../CertFile.pem"
+#define PRIVATE_KEY_FILEPATH "../WingedKey.pem"
 
 #define CIPHER_LIST "AES128-SHA"
 
