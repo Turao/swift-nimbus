@@ -19,8 +19,6 @@
 #define CERTIFICATE_FILEPATH "../CertFile.pem"
 #define PRIVATE_KEY_FILEPATH "../WingedKey.pem"
 
-#define CIPHER_LIST "AES128-SHA"
-
 
 
 Socket::Socket(std::string host, unsigned int port) :
@@ -66,8 +64,8 @@ setsockopt(s,
 
   // server-side openssl will be initialized for
   // each new socket opened
-  SSL_init();
-  SSL_loadCertificate();
+
+  if (!host.empty()) SSL_initClient();
 }
 
 
@@ -79,12 +77,14 @@ openSSL_ctx(nullptr)
   // this is the socket opened on every accept call
   // so, it's a Server-side socket
 
-  SSL_init();
-  // SSL_loadCertificate();
+  SSL_initServer();
+  SSL_loadCertificate();
+
   SSL_bind();
 
   // accepts the SSL handshake started by the client
   SSL_accept();
+
   
 }
 
@@ -212,20 +212,54 @@ void Socket::write(char* data, size_t length)
 /*----------  OPEN SSL FUNCTIONS -----------*/
 
 
-void Socket::SSL_init()
+// void Socket::SSL_init()
+// {
+//   // initializes open ssl library
+//   // loads algorithms and error strings for debugging
+//   _SSL_base_init();
+
+//   // sets SSLv23 as the connection method
+//   _SSL_create_context(TLSv1_method());
+
+//   // defines possible ciphers
+//   _SSL_init_cipher_list();
+
+//   // creates ssl layer structure
+//   ssl = SSL_new(openSSL_ctx);
+// }
+
+
+
+void Socket::SSL_initClient()
 {
+  std::cout << "Client side ssl" << std::endl;
+
   // initializes open ssl library
   // loads algorithms and error strings for debugging
   _SSL_base_init();
 
   // sets SSLv23 as the connection method
-  _SSL_create_context(SSLv23_method());
-
-  // defines possible ciphers
-  _SSL_init_cipher_list();
+  _SSL_create_context(TLSv1_client_method());
 
   // creates ssl layer structure
   ssl = SSL_new(openSSL_ctx);
+
+}
+
+
+void Socket::SSL_initServer()
+{
+  std::cout << "Server side ssl" << std::endl;
+
+  // initializes open ssl library
+  // loads algorithms and error strings for debugging
+  _SSL_base_init();
+
+  // sets SSLv23 as the connection method
+  _SSL_create_context(TLSv1_server_method());
+
+  // creates ssl layer structure
+  ssl = SSL_new(openSSL_ctx);  
 }
 
 
@@ -264,20 +298,6 @@ void Socket::_SSL_create_context(const SSL_METHOD* method)
     SSL_cleanup();
 
     ERR_print_errors_fp(stderr);
-    exit(1);
-  }
-}
-
-
-void Socket::_SSL_init_cipher_list() // not working properly
-{
-  if (SSL_CTX_set_cipher_list(openSSL_ctx, CIPHER_LIST) < 1)
-  {
-    std::cout << "Error while initializing cipher list"
-              << std::endl;
-    ERR_print_errors_fp(stderr);
-
-    SSL_cleanup();
     exit(1);
   }
 }
@@ -361,6 +381,8 @@ void Socket::SSL_accept()
 
     ERR_print_errors_fp(stderr);
 
+    _SSL_list_ciphers();
+
     close(s);
     SSL_cleanup();
     exit(1);
@@ -370,11 +392,13 @@ void Socket::SSL_accept()
 void Socket::SSL_connect()
 {
   // connects to the server, SSL layer
-  if (::SSL_connect(ssl) < 1)
+  if (::SSL_connect(ssl) != 1)
   {
     std::cout << "SSL Connection error:"
               << std::endl;
     ERR_print_errors_fp(stderr);
+
+    _SSL_list_ciphers();
 
     close(s);
     SSL_cleanup();
@@ -387,5 +411,16 @@ void Socket::SSL_cleanup()
 {
   if (ssl) SSL_free(ssl);
   if (openSSL_ctx) SSL_CTX_free(openSSL_ctx);
-  EVP_cleanup(); // cleanup openssl
+  // EVP_cleanup(); // cleanup openssl
+}
+
+
+void Socket::_SSL_list_ciphers()
+{
+  int priority = 0;
+  while (auto cipher = SSL_get_cipher_list(ssl, priority))
+  {
+    std::cout << cipher << std::endl;
+    priority++;
+  }
 }

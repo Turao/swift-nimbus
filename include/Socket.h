@@ -41,9 +41,13 @@ private:
   SSL_CTX *openSSL_ctx;
   
   void SSL_init();
+
+  void SSL_initClient();
+  void SSL_initServer();
+
   void _SSL_base_init();
   void _SSL_create_context(const SSL_METHOD* method);
-  void _SSL_init_cipher_list();
+  void _SSL_list_ciphers();
   void SSL_bind();
   void SSL_loadCertificate();
   void SSL_showCertificate();
