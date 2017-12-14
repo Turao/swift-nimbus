@@ -36,6 +36,8 @@ NimbusClient:
            $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/Utilities.o \
 					 -lpthread \
+           -lssl \
+           -lcrypto \
 					 -Wall
 
 
@@ -53,6 +55,8 @@ NimbusServer:
            $(BIN_DIR)/NimbusFile.o \
 					 $(BIN_DIR)/Utilities.o \
 					 -lpthread \
+           -lssl \
+           -lcrypto \
 					 -Wall
 
 # Classes
