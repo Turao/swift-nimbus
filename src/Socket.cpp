@@ -19,56 +19,47 @@
 #define CERTIFICATE_FILEPATH "../CertFile.pem"
 #define PRIVATE_KEY_FILEPATH "../WingedKey.pem"
 
+#define SOCKET_TIMEOUT 15
 
-
+/* Client-side socket
+*   Needs to specify:
+* - destination host
+* - destination port
+*
+*  Server-side socket
+*   Needs to specify:
+* - source port
+*/
 Socket::Socket(std::string host, unsigned int port) :
 ssl(nullptr),
 openSSL_ctx(nullptr)
 {
-  std::cout << "Initializing socket" << std::endl;
-  if ((s = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
-  {
-    std::cout << "Socket initialization failure: " 
-              << strerror(errno)
-              << std::endl;
-    exit(1);
+  init_socket();
+  assign_local_host(port);
+  
+  if (host.empty()) {
+    // Server-side socket (master)
+    // don't initialize ssl layer here!
+    // server-side ssl layer will be initialized for
+    // each new socket accepted (opened)
   }
-  std::cout << "Socket succesfully initialized" << std::endl;
-
-  // assigns local socket IP/PORT
-  std::cout << "Assigning local host address" << std::endl;
-  bzero(&s_local, sizeof(s_local));
-  s_local.sin_family = AF_INET;
-  s_local.sin_addr.s_addr = htonl(INADDR_ANY);
-  s_local.sin_port = htons(port);
-
-  // assigns remote socket IP/PORT
-  if (!host.empty()) {
-    std::cout << "Assigning remote host address" << std::endl;
-    bzero(&s_remote, sizeof(s_remote));
-    s_remote.sin_family = AF_INET;
-    s_remote.sin_addr.s_addr = inet_addr(host.c_str());
-    s_remote.sin_port = htons(port);
+  else {
+    // Client-side socket
+    assign_remote_host(host, port);
+    SSL_initClient();
   }
-
-// setting 15 second timeout
-struct timeval tv;
-tv.tv_sec = 15;
-tv.tv_usec = 0;  // Not init'ing this can cause strange errors
-setsockopt(s, 
-           SOL_SOCKET, 
-           SO_RCVTIMEO, 
-           reinterpret_cast<char*>(&tv),
-           sizeof(struct timeval));
-
-
-  // server-side openssl will be initialized for
-  // each new socket opened
-
-  if (!host.empty()) SSL_initClient();
+  
+  set_timeout(SOCKET_TIMEOUT);
 }
 
 
+
+/* Server-side socket
+*   Opened by the master socket when accepting 
+*   incoming connections. 
+*   Needs to specify:
+* - socked file descriptor created by the 'parent' socket
+*/
 Socket::Socket(int sockfd) :
 s(sockfd),
 ssl(nullptr),
@@ -77,15 +68,13 @@ openSSL_ctx(nullptr)
   // this is the socket opened on every accept call
   // so, it's a Server-side socket
 
+  // all socket related attributes are already
+  // initialized by its 'parent' socket
+  
   SSL_initServer();
-  SSL_loadCertificate();
-
   SSL_bind();
-
   // accepts the SSL handshake started by the client
   SSL_accept();
-
-  
 }
 
 
@@ -105,8 +94,7 @@ void Socket::bind()
 {
   std::cout << "Binding socket data" << std::endl;
   // binds local information with socket
-  if ((::bind(s, (struct sockaddr *)&s_local, sizeof(s_local))) != 0)
-  {
+  if ((::bind(s, (struct sockaddr *)&s_local, sizeof(s_local))) != 0) {
     std::cout << "Socket bind failure: " 
               << strerror(errno)
               << std::endl;
@@ -122,8 +110,7 @@ void Socket::connect()
   // establishes connection between local socket and remote socket
   std::cout << "Establishing connection" << std::endl;
   
-  if (::connect(s, (struct sockaddr*)&s_remote, sizeof(s_remote)) != 0)
-  {
+  if (::connect(s, (struct sockaddr*)&s_remote, sizeof(s_remote)) != 0) {
     std::cout << "Connection error: " 
               << strerror(errno)
               << std::endl;
@@ -207,11 +194,71 @@ void Socket::write(char* data, size_t length)
 }
 
 
+void Socket::init_socket()
+{
+  std::cout << "Initializing socket" << std::endl;
+  if ((s = socket(AF_INET, SOCK_STREAM, 0)) == INVALID_SOCKET)
+  {
+    std::cout << "Socket initialization failure: " 
+              << strerror(errno)
+              << std::endl;
+    exit(1);
+  }
+  std::cout << "Socket succesfully initialized" << std::endl;
+}
+
+
+void Socket::assign_local_host(unsigned int port)
+{
+  // assigns local socket IP/PORT
+  std::cout << "Assigning local host address" << std::endl;
+  bzero(&s_local, sizeof(s_local));
+  s_local.sin_family = AF_INET;
+  s_local.sin_addr.s_addr = htonl(INADDR_ANY);
+  s_local.sin_port = htons(port);
+}
+
+
+void Socket::assign_remote_host(std::string host, unsigned int port)
+{
+  // assigns remote socket IP/PORT
+  if (!host.empty()) {
+    std::cout << "Assigning remote host address" << std::endl;
+    bzero(&s_remote, sizeof(s_remote));
+    s_remote.sin_family = AF_INET;
+    s_remote.sin_addr.s_addr = inet_addr(host.c_str());
+    s_remote.sin_port = htons(port);
+  }
+  else
+  {
+    std::cout << "Error while assigning remote host: "
+              << "Host not specified" 
+              << std::endl;
+  }
+}
+
+
+void Socket::set_timeout(unsigned int timeout)
+{
+  // setting 15 second timeout
+  struct timeval tv;
+  tv.tv_sec = timeout;
+  tv.tv_usec = 0;  // Not init'ing this can cause strange errors
+  setsockopt(s, 
+             SOL_SOCKET, 
+             SO_RCVTIMEO, 
+             reinterpret_cast<char*>(&tv),
+             sizeof(struct timeval));
+}
+
 
 
 /*----------  OPEN SSL FUNCTIONS -----------*/
 
-
+// In case both sides decide to use certificates:
+// (just delete the specific client/server functions 
+//  and call this one)
+//
 // void Socket::SSL_init()
 // {
 //   // initializes open ssl library
@@ -221,8 +268,7 @@ void Socket::write(char* data, size_t length)
 //   // sets SSLv23 as the connection method
 //   _SSL_create_context(TLSv1_method());
 
-//   // defines possible ciphers
-//   _SSL_init_cipher_list();
+//   _SSL_load_certificate();
 
 //   // creates ssl layer structure
 //   ssl = SSL_new(openSSL_ctx);
@@ -258,6 +304,8 @@ void Socket::SSL_initServer()
   // sets SSLv23 as the connection method
   _SSL_create_context(TLSv1_server_method());
 
+  _SSL_load_certificate();
+
   // creates ssl layer structure
   ssl = SSL_new(openSSL_ctx);  
 }
@@ -266,24 +314,27 @@ void Socket::SSL_initServer()
 
 void Socket::_SSL_base_init()
 {
-  // initializes the SSL libraries
-  if (SSL_library_init() < 0)
-  {
-    std::cout << "Unable to load the OpenSSL library"
-              << std::endl;
-    SSL_cleanup();
-    exit(1);
-  }
+  // "If you fail to initialize the library, then you will 
+  //  experience unexplained errors like 
+  //  SSL_CTX_new returning NULL, 
+  //  error messages like SSL_CTX_new:library has no ciphers 
+  //  and alert handshake failure with no shared ciphers."
 
+
+  // loads the open ssl
+  SSL_library_init();
+
+  // adds ciphers and digests
+  // (loads libcrypto)
   OpenSSL_add_all_algorithms();
+  OpenSSL_add_ssl_algorithms();
   SSL_load_error_strings();
 }
 
 
 void Socket::_SSL_create_context(const SSL_METHOD* method)
 {
-  if(method == nullptr)
-  {
+  if (method == nullptr) {
     std::cout << "Invalid connection method"
               << std::endl;
     SSL_cleanup();
@@ -291,8 +342,7 @@ void Socket::_SSL_create_context(const SSL_METHOD* method)
   }
 
   openSSL_ctx = SSL_CTX_new(method);
-  if (openSSL_ctx  ==  nullptr)
-  {
+  if (openSSL_ctx  ==  nullptr) {
     std::cout << "Error while initializing SSL context:"
               << std::endl;
     SSL_cleanup();
@@ -310,12 +360,11 @@ void Socket::SSL_bind()
 
 
 
-void Socket::SSL_loadCertificate()
+void Socket::_SSL_load_certificate()
 {
   if (SSL_CTX_use_certificate_file(openSSL_ctx, 
                                    CERTIFICATE_FILEPATH,
-                                   SSL_FILETYPE_PEM) <= 0)
-  {
+                                   SSL_FILETYPE_PEM) <= 0) {
     std::cout << "Error while setting the certificate file"
               << std::endl;
     SSL_cleanup();
@@ -325,8 +374,7 @@ void Socket::SSL_loadCertificate()
   // adds private key file into SSL context
   if (SSL_CTX_use_PrivateKey_file(openSSL_ctx, 
                                   PRIVATE_KEY_FILEPATH,
-                                  SSL_FILETYPE_PEM) <= 0)
-  {
+                                  SSL_FILETYPE_PEM) <= 0) {
     std::cout << "Error while setting the key file"
               << std::endl;
     SSL_cleanup();
@@ -334,8 +382,7 @@ void Socket::SSL_loadCertificate()
   }
 
   // makes sure the key and certificate file match
-  if (SSL_CTX_check_private_key(openSSL_ctx) == 0)
-  {
+  if (SSL_CTX_check_private_key(openSSL_ctx) == 0) {
     std::cout << "Private key does not match the certificate public key"
               << std::endl;
     SSL_cleanup();
@@ -348,23 +395,21 @@ void Socket::SSL_showCertificate()
 {
   X509 *cert = SSL_get_peer_certificate(ssl);
 
-  if (cert !=  nullptr)
-  {
-    char *line;
+  if (cert !=  nullptr) {
+    std::cout << "Subject:" << std::endl;
+    X509_NAME_print_ex_fp(stderr,
+                          X509_get_subject_name(cert),
+                          2,
+                          XN_FLAG_MULTILINE);    
+
+    std::cout << std::endl;
     
-    line  = X509_NAME_oneline(
-              X509_get_subject_name(cert),0,0);
-    std::cout << "Subject:"
-              << line
-              << std::endl;
-    
-    free(line);
-    
-    line  = X509_NAME_oneline(
-              X509_get_issuer_name(cert),0,0);
-    std::cout << "Issuer:"
-              << line
-              << std::endl;
+    std::cout << "Issuer:" << std::endl;
+    X509_NAME_print_ex_fp(stderr,
+                          X509_get_issuer_name(cert),
+                          2, XN_FLAG_MULTILINE);
+
+    std::cout << std::endl;
   }
 
   X509_free(cert);
@@ -374,8 +419,7 @@ void Socket::SSL_showCertificate()
 void Socket::SSL_accept()
 {
   // Do the SSL handshake
-  if (::SSL_accept(ssl) < 1)
-  {
+  if (::SSL_accept(ssl) < 1) {
     std::cout << "Error during SSL handshake (accept):"
               << std::endl;
 
@@ -392,8 +436,7 @@ void Socket::SSL_accept()
 void Socket::SSL_connect()
 {
   // connects to the server, SSL layer
-  if (::SSL_connect(ssl) != 1)
-  {
+  if (::SSL_connect(ssl) != 1) {
     std::cout << "SSL Connection error:"
               << std::endl;
     ERR_print_errors_fp(stderr);
