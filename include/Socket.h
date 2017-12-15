@@ -3,8 +3,7 @@
 #include <string>
 #include <netinet/in.h>
 
-#include <openssl/ssl.h> // Open SSL
-#include <openssl/err.h> // Open SSL errors
+#include "SecureSocketLayer.h"
 
 #define SOCKET int
 #define INVALID_SOCKET  ((SOCKET)~0)
@@ -41,26 +40,5 @@ private:
   void assign_remote_host(std::string host, unsigned int port);
   void set_timeout(unsigned int timeout);
 
-
-  /* Open SSL Layer methods */
-  
-  SSL *ssl;
-  SSL_CTX *openSSL_ctx;
-  
-  void SSL_init();
-
-  void SSL_initClient();
-  void SSL_initServer();
-
-  void SSL_bind();
-  void SSL_showCertificate();
-  void SSL_accept();
-  void SSL_connect();
-  void SSL_cleanup();
-  
-  void _SSL_base_init();
-  void _SSL_create_context(const SSL_METHOD* method);
-  void _SSL_list_ciphers();
-  void _SSL_load_certificate();
-
+  SecureSocketLayer ssl;
 };
