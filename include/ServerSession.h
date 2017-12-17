@@ -17,6 +17,7 @@ public:
 protected:
 private:
   std::string username;
+  std::mutex token_mtx;
 
   void* onMessage(Utilities::Message message) override;
   void handleReply(Utilities::Message message) override;

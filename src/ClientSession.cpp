@@ -68,6 +68,11 @@ void ClientSession::handleRequest(Utilities::Message message)
       this->deleteFile(message.content);
       break;
 
+    case Utilities::FILE_TOKEN:
+      replyMessage = {Utilities::REPLY, Utilities::PERMISSION_GRANTED};
+      this->reply(replyMessage);
+      break;
+
     default:
       std::cout << "Unknown field requested" << std::endl;
       break;

@@ -34,6 +34,8 @@ public:
   void requestDeleteFile(std::string filepath);
   void deleteFile(std::string filename);
 
+  bool requestPermissionToSendFile(std::string file);
+
   bool downloadToCurrDir = false;
 
   

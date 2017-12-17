@@ -190,3 +190,13 @@ void NimbusFile::resetRecentlyModified()
 {
   this->recentlyModified = false;
 }
+
+void NimbusFile::setToken(bool occupied)
+{
+  this->token = occupied;
+}
+
+bool NimbusFile::getToken()
+{
+  return this->token;
+}

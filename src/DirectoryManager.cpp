@@ -173,7 +173,9 @@ void DirectoryManager::checkForRecentlyModifiedFiles()
                   << std::endl;
 
         // send file to other endpoint
-        this->session->sendFile(file->getFilePath().c_str());
+        if (this->session->requestPermissionToSendFile(file->getName() + "." + file->getExtension()))
+          this->session->sendFile(file->getFilePath().c_str());
+
         file->resetRecentlyModified();
       }
     }
@@ -236,4 +238,38 @@ void DirectoryManager::lockFiles()
 void DirectoryManager::unlockFiles()
 {
   files_mtx.unlock();
+}
+
+void DirectoryManager::setFileToken(std::string requestFile, bool occupied)
+{
+  files_mtx.lock();
+  for(auto it = files.begin(); it != files.end(); ++it) {
+    NimbusFile *file = *it;
+    std::string fileName = file->getName() + "." + file->getExtension();
+    if (requestFile == fileName)
+    {
+      file->setToken(occupied);
+      break;
+    }
+  }
+  files_mtx.unlock();
+}
+
+bool DirectoryManager::getFileToken(std::string requestFile)
+{
+  bool token;
+
+  files_mtx.lock();
+  for(auto it = files.begin(); it != files.end(); ++it) {
+    NimbusFile *file = *it;
+    std::string fileName = file->getName() + "." + file->getExtension();
+    if (requestFile == fileName)
+    {
+      token = file->getToken();
+      break;
+    }
+  }
+  files_mtx.unlock();
+
+  return token;
 }

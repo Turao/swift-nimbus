@@ -20,6 +20,9 @@ namespace Utilities
     FILE = 5,
     DELETE_FILE = 6,
     LIST_FILES = 7,
+    FILE_TOKEN = 8,
+    PERMISSION_GRANTED = 9,
+    PERMISSION_DENIED = 10,
     OTHER
   };
 

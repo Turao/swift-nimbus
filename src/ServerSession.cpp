@@ -77,6 +77,21 @@ void ServerSession::handleRequest(Utilities::Message message)
       this->sendFilesList();
       break;
 
+    case Utilities::FILE_TOKEN:
+      Utilities::Message reply;
+
+      token_mtx.lock();
+      if (!this->directoryManager->getFileToken(message.content)) {
+        this->directoryManager->setFileToken(message.content, true);
+        reply = { Utilities::REPLY, Utilities::PERMISSION_GRANTED };
+      }
+      else
+        reply = { Utilities::REPLY, Utilities::PERMISSION_DENIED };
+
+      token_mtx.unlock();
+      this->reply(reply);
+      break;
+
     default:
       std::cout << "Unknown field requested" << std::endl;
       break;
@@ -115,6 +130,9 @@ void ServerSession::handleReply(Utilities::Message message)
     case Utilities::END_OF_FILE:
       std::cout << "Finishing: " << std::string(message.content) << std::endl;
       this->saveFile();
+      token_mtx.lock();
+      this->directoryManager->setFileToken(message.content, false);
+      token_mtx.unlock();
       break;
 
     default:

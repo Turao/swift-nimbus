@@ -32,6 +32,9 @@ public:
   void startObserver();
   void stopObserver();
 
+  void setToken(bool occupied);
+  bool getToken();
+
 protected:
 
 private:
@@ -42,6 +45,7 @@ private:
   time_t statusChange;
   time_t lastAccess;
   int size;
+  bool token = false;
 
   bool recentlyModified;
 
