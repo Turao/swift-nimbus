@@ -35,6 +35,9 @@ Socket::Socket(std::string host, unsigned int port)
     // don't initialize ssl layer here!
     // server-side ssl layer will be initialized for
     // each new socket accepted (opened)
+  
+    reuse_addr();
+    reuse_port();
   }
   else {
     // Client-side socket
@@ -244,3 +247,27 @@ void Socket::set_timeout(unsigned int timeout)
 
 
 
+void Socket::reuse_port(bool reuse)
+{
+#ifdef SO_REUSEPORT
+  if (setsockopt(sockfd,
+                 SOL_SOCKET,
+                 SO_REUSEPORT,
+                 (const char*) &reuse,
+                 sizeof(reuse) ) < 0) 
+  std::cout << "Error while setting SO_REUSEPORT option."
+            << std::endl;
+#endif
+}
+
+
+void Socket::reuse_addr(bool reuse)
+{
+  if (setsockopt(sockfd,
+                 SOL_SOCKET,
+                 SO_REUSEADDR,
+                 (const char*) &reuse,
+                 sizeof(reuse) ) < 0) 
+  std::cout << "Error while setting SO_REUSEADDR option."
+            << std::endl;
+}
