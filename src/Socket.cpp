@@ -36,8 +36,8 @@ Socket::Socket(std::string host, unsigned int port)
     // server-side ssl layer will be initialized for
     // each new socket accepted (opened)
   
-    reuse_addr();
-    reuse_port();
+    reuse_addr(true);
+    reuse_port(true);
   }
   else {
     // Client-side socket
@@ -250,7 +250,7 @@ void Socket::set_timeout(unsigned int timeout)
 void Socket::reuse_port(bool reuse)
 {
 #ifdef SO_REUSEPORT
-  if (setsockopt(sockfd,
+  if (setsockopt(s,
                  SOL_SOCKET,
                  SO_REUSEPORT,
                  (const char*) &reuse,
@@ -263,7 +263,7 @@ void Socket::reuse_port(bool reuse)
 
 void Socket::reuse_addr(bool reuse)
 {
-  if (setsockopt(sockfd,
+  if (setsockopt(s,
                  SOL_SOCKET,
                  SO_REUSEADDR,
                  (const char*) &reuse,
