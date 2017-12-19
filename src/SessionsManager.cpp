@@ -59,8 +59,9 @@ void SessionsManager::scrubber()
       else {
         ++it;
       }
-      sessions_mtx.unlock();
     }
+    sessions_mtx.unlock();
+    
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 }
