@@ -12,7 +12,7 @@
 #include "NimbusFile.h"
 
 #define DEBUG_PATH_PREFIX "/home/leonardo/sync_dir_" // to-do: remove
-#define PATH_PREFIX "/home/sync_dir_"
+#define PATH_PREFIX "./sync_dir_"
 
 DirectoryManager::DirectoryManager(std::string username, Session *session) :
 _checkForNewFiles_isRunning(false),
@@ -175,6 +175,8 @@ void DirectoryManager::checkForRecentlyModifiedFiles()
         // send file to other endpoint
         if (this->session->requestPermissionToSendFile(file->getName() + "." + file->getExtension()))
           this->session->sendFile(file->getFilePath().c_str());
+        else
+          std::cout << "Token not granted for file: " << file->getFilePath() << std::endl;
 
         file->resetRecentlyModified();
       }
@@ -238,38 +240,4 @@ void DirectoryManager::lockFiles()
 void DirectoryManager::unlockFiles()
 {
   files_mtx.unlock();
-}
-
-void DirectoryManager::setFileToken(std::string requestFile, bool occupied)
-{
-  files_mtx.lock();
-  for(auto it = files.begin(); it != files.end(); ++it) {
-    NimbusFile *file = *it;
-    std::string fileName = file->getName() + "." + file->getExtension();
-    if (requestFile == fileName)
-    {
-      file->setToken(occupied);
-      break;
-    }
-  }
-  files_mtx.unlock();
-}
-
-bool DirectoryManager::getFileToken(std::string requestFile)
-{
-  bool token;
-
-  files_mtx.lock();
-  for(auto it = files.begin(); it != files.end(); ++it) {
-    NimbusFile *file = *it;
-    std::string fileName = file->getName() + "." + file->getExtension();
-    if (requestFile == fileName)
-    {
-      token = file->getToken();
-      break;
-    }
-  }
-  files_mtx.unlock();
-
-  return token;
 }

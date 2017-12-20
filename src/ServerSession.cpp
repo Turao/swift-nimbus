@@ -3,15 +3,17 @@
 #include <iostream>
 #include <cstring>
 #include <vector>
+#include <algorithm>
 
 #include "DirectoryManager.h"
 #include "NimbusFile.h"
 #include "Utilities.h"
 
-ServerSession::ServerSession(Socket *s) :
+ServerSession::ServerSession(Socket *s, std::vector<std::string> &tl) :
 Session(s)
 {
   std::cout << "Initializing Server-side session" << std::endl;
+  this->tokenlist = &tl;
 
   // requests username
   Utilities::Message requestMessage;
@@ -58,7 +60,7 @@ void ServerSession::handleRequest(Utilities::Message message)
   std::cout << "Handling request" << std::endl;
 
   char replyContent[FILE_BLOCK_SIZE];
-  Utilities::Message replyMessage;
+  Utilities::Message reply;
 
   switch (message.field)
   {
@@ -78,16 +80,13 @@ void ServerSession::handleRequest(Utilities::Message message)
       break;
 
     case Utilities::FILE_TOKEN:
-      Utilities::Message reply;
-
       token_mtx.lock();
-      if (!this->directoryManager->getFileToken(message.content)) {
-        this->directoryManager->setFileToken(message.content, true);
+      if (!this->getFileToken(message.content)) {
+        this->addFileToken(message.content);
         reply = { Utilities::REPLY, Utilities::PERMISSION_GRANTED };
       }
       else
         reply = { Utilities::REPLY, Utilities::PERMISSION_DENIED };
-
       token_mtx.unlock();
       this->reply(reply);
       break;
@@ -131,7 +130,7 @@ void ServerSession::handleReply(Utilities::Message message)
       std::cout << "Finishing: " << std::string(message.content) << std::endl;
       this->saveFile();
       token_mtx.lock();
-      this->directoryManager->setFileToken(message.content, false);
+      this->removeFileToken(message.content);
       token_mtx.unlock();
       break;
 
@@ -160,4 +159,25 @@ void ServerSession::sendFilesList()
   }
 
   this->directoryManager->unlockFiles();
+}
+
+bool ServerSession::requestPermissionToSendFile(std::string file)
+{
+  return true;
+}
+
+void ServerSession::addFileToken(std::string file)
+{
+  tokenlist->push_back(username + file);
+}
+
+void ServerSession::removeFileToken(std::string file)
+{
+  if (getFileToken(file))
+    tokenlist->erase(std::find(tokenlist->begin(), tokenlist->end(), username + file));
+}
+
+bool ServerSession::getFileToken(std::string file)
+{
+  return std::find(tokenlist->begin(), tokenlist->end(), username + file) != tokenlist->end();
 }

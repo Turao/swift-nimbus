@@ -24,9 +24,6 @@ public:
   void lockFiles();
   void unlockFiles();
 
-  void setFileToken(std::string file, bool occupied);
-  bool getFileToken(std::string file);
-
 protected:
 
 private: 

@@ -68,11 +68,6 @@ void ClientSession::handleRequest(Utilities::Message message)
       this->deleteFile(message.content);
       break;
 
-    case Utilities::FILE_TOKEN:
-      replyMessage = {Utilities::REPLY, Utilities::PERMISSION_GRANTED};
-      this->reply(replyMessage);
-      break;
-
     default:
       std::cout << "Unknown field requested" << std::endl;
       break;
@@ -134,4 +129,22 @@ void ClientSession::requestServerDirectoryEntries()
   Utilities::Message *response = static_cast<Utilities::Message*>( request(message) );
   handleReply(*response);
   delete response;
+}
+
+bool ClientSession::requestPermissionToSendFile(std::string file)
+{
+  bool isAllowed;
+  
+  Utilities::Message requestMessage;
+  requestMessage = { Utilities::REQUEST, Utilities::FILE_TOKEN, file.size() };
+  file.copy(requestMessage.content, file.size());
+
+  std::cout << "Requesting token for: " << requestMessage.content << std::endl;
+
+  Utilities::Message *response = static_cast<Utilities::Message*>( this->request(requestMessage) );
+  isAllowed = response->field == Utilities::PERMISSION_GRANTED;
+  std::cout << "Received answer for token: " << response->field << std::endl;
+  delete response;
+
+  return isAllowed;
 }

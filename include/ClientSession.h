@@ -17,6 +17,8 @@ public:
   void printLocalDirectoryEntries();
   void requestServerDirectoryEntries();
 
+  bool requestPermissionToSendFile(std::string file) override;
+
 protected:
 private:  
   std::string username;

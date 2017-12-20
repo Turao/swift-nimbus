@@ -334,20 +334,3 @@ void Session::deleteFile(std::string fileName)
   if (remove(filepath.c_str()) == 0) 
     std::cout << "File " << fileName << " deleted" << std::endl;
 }
-
-bool Session::requestPermissionToSendFile(std::string file)
-{
-  bool isAllowed;
-  
-  Utilities::Message requestMessage;
-  requestMessage = { Utilities::REQUEST, Utilities::FILE_TOKEN, file.size() };
-  file.copy(requestMessage.content, file.size());
-
-  std::cout << "Requesting token for: " << requestMessage.content << std::endl;
-
-  Utilities::Message *response = static_cast<Utilities::Message*>( this->request(requestMessage) );
-  isAllowed = response->field == Utilities::PERMISSION_GRANTED;
-  delete response;
-
-  return isAllowed;
-}

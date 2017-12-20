@@ -1,6 +1,7 @@
 #include "SessionsManager.h"
 
 #include <iostream>
+#include <vector>
 
 SessionsManager::SessionsManager(Socket *master) :
 master(master)
@@ -77,6 +78,8 @@ void SessionsManager::stopConnectionsHandler()
 
 void SessionsManager::connectionsHandler()
 {
+  std::vector<std::string> tokenlist;
+
   std::cout << "Initializing connections handler" << std::endl;
   this->_connectionsHandler_isRunning = true;
   while(_connectionsHandler_isRunning)
@@ -84,7 +87,7 @@ void SessionsManager::connectionsHandler()
     Socket *response = master->accept();
     if(response != nullptr) {
       std::cout << "New connection on master socket" << std::endl;
-      ServerSession *session = new ServerSession(response);
+      ServerSession *session = new ServerSession(response, tokenlist);
       sessions_mtx.lock();
       this->sessions.push_back(session);
       sessions_mtx.unlock();
