@@ -37,7 +37,7 @@ SecureSocketLayer::SecureSocketLayer()
 
 SecureSocketLayer::~SecureSocketLayer()
 {
-  cleanup();
+  //cleanup();
 }
 
 
